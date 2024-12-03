@@ -1,0 +1,25 @@
+variables:
+  npm_config_cache: "$CI_PROJECT_DIR/.npm"
+  CYPRESS_CACHE_FOLDER: "$CI_PROJECT_DIR/cache/Cypress"
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .npm
+    - cache/Cypress
+
+cypress-component-test:
+  image: registry.gitlab.com/nielsen-media/maf/maf-public/packages/cypress:$CI_CYPRESS_NODE_VERSION
+  extends: .base
+  dependencies: []
+  tags:
+    - cicd-runner-maf
+  stage: cypressTests
+  script:
+    - !reference [.setup_frontend, before_script] 
+    - yarn install
+    - yarn run cypress:ct:ci
+  retry: 2
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'

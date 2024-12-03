@@ -1,0 +1,85 @@
+.ci_version: &ci_version v1.8.9
+include:      
+  - project: 'nielsen-media/maf/ci-cd/gitlab-ci-common'
+    ref: *ci_version
+    file:
+      - '/Jobs/v2/stages/base.yml'
+      - '/Jobs/v2/stages/initPipeline.yml'
+      - '/Jobs/v2/stages/bumpVersionmaf.yml'
+      - '/Jobs/v2/stages/deployManifest.yml'
+      - '/Jobs/v2/stages/binaryPublish.yml'
+      - '/Jobs/v2/stages/deployFrontend/base.yml'
+      - '/Jobs/v2/stages/deployFrontend/defaultBranch.yml'
+      - '/Jobs/v2/stages/preBuildTests.yml'
+    rules:
+      - if: $ENV == null
+
+  - project: 'nielsen-media/maf/ci-cd/gitlab-ci-common'
+    ref: *ci_version
+    file:
+        - '/Jobs/v2/stages/base.yml'
+        - '/Jobs/v2/stages/initPipeline.yml'
+        - '/Jobs/v2/stages/deployManifest.yml'
+        - '/Jobs/v2/stages/deployFrontend/base.yml'
+        - '/Jobs/v2/stages/deployFrontend/manual.yml'
+    rules:
+        - if: $ENV
+
+
+  - local: '/ci/jobs/componentTesting.yml'
+    rules:
+      - if: $ENV == null
+
+variables:
+  ##================== *** deployment only *** ================##
+  ENV:
+    value: 'alpha'
+    options: 
+      - 'alpha'
+      - 'prod'
+    description: 'The environment to be deployed. alpha or prod ?'
+  NEW_SERVICE_VERSION:
+    value: ''
+    description: 'The deployment version.'
+  ##================== *** END deployment only END*** ================##
+
+  ##================== *** initPipeline *** ================##
+  USE_GITLAB_PACKAGE_REGISTRY: 'true'
+  PACKAGE_MANGER: yarn
+  ##================== *** END initPipeline END *** ================##
+
+  ##================== *** binaryPublish *** ================##
+  BUILD_PACKAGE_PATH: build
+  BUILD_PACKAGE_COMMAND: build:prod
+  ##================== *** END binaryPublish *** ================##
+
+  ##================== *** deployManifest *** ================##
+  APPLICATION_NAME: starter
+  MAF_MANIFEST_PATH: ./conf/dev-env/apps/starter/starter.json
+  ##================== *** END deployManifest END *** ================##
+
+  ##================== *** deployFrontend *** ================##
+  NEXUS_MAVEN_REPO: maf-starter-fe
+  NEXUS_APP_NAME: starter
+  ##================== *** END deployFrontend END *** ================##
+
+  BUMP_VERSION_TYPE: 'semantic'
+  CI_REPO_BRANCH: *ci_version
+  GITLAB_REGISTRY_DEPLOY: 'true'
+  PRE_PUBLISH_COMMANDS: build:prod
+  PRE_BUILD_COMMANDS: build:prod
+  PUBLISH_PRE_RELEASE: 'false'
+  SERVICE_NAME: 'maf-starter-fe'
+  SCRIPTS_DIR: .
+  USE_LINTER: 'true'
+  LINTER_COMMAND: lint
+
+stages:
+  - mafInit
+  - mafPreBuildTest
+  - cypressTests
+  - mafBumpVersion
+  - mafBinaryPublish
+  - mafDeploymentManifest
+  - mafDeployFrontend
+  - mafPreReleaseVersion
