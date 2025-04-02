@@ -3,17 +3,276 @@
     {
       "name": "Audio & SMP QA Form",
       "description": "Audio & SMP QA Monitoring Form",
-      "display_code": "qa-form-audio-smp",
-      "dependency_rest_actions": []
+      "display_code": "qaforms-audio-smp",
+      "dependency_rest_actions": [
+        {
+          "path": "/apps$",
+          "method": "GET"
+        },
+        {
+          "path": "/forms/fields$",
+          "method": "GET"
+        },
+        {
+          "path": "/employees/qa$",
+          "method": "GET"
+        },
+        {
+          "path": "/employees/rec$",
+          "method": "GET"
+        },
+        {
+          "path": "/forms/fields/audio/calltypes$",
+          "method": "GET"
+        },
+        {
+          "path": "/forms/audio/historical$",
+          "method": "POST"
+        },
+        {
+          "path": "/forms/temp/audio$",
+          "method": "POST"
+        },
+        {
+          "path": "/data/calltypes$",
+          "method": "GET"
+        },
+        {
+          "path": "/data/framecodes$",
+          "method": "GET"
+        },
+        {
+          "path": "/data/sitenames$",
+          "method": "GET"
+        },
+        {
+          "path": "/forms/scoringcodes$",
+          "method": "GET"
+        },
+        {
+          "path": "/data/categories$",
+          "method": "GET"
+        },
+        {
+          "path": "/emailErrorReport$",
+          "method": "POST"
+        }
+      ]
     },
     {
       "name": "Generate New Reports",
       "description": "Generate new reports for call monitoring",
       "display_code": "generate-report",
-      "dependency_rest_actions": []
+      "dependency_rest_actions": [
+        {
+          "path": "/employees/rec$",
+          "method": "GET"
+        },
+        {
+          "path": "/forms/audio/historical$",
+          "method": "GET"
+        },
+        {
+          "path": "/forms/temp/audio$",
+          "method": "GET"
+        },
+        {
+          "path": "/employees/qa$",
+          "method": "GET"
+        },
+        {
+          "path": "/reports/audio/cmr$",
+          "method": "GET"
+        },
+        {
+          "path": "/reports/audio/mca$",
+          "method": "GET"
+        },
+        {
+          "path": "/emailReport$",
+          "method": "POST"
+        },
+        {
+          "path": "/emailErrorReport$",
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "name": "Operations",
+      "description": "Operations analytics view",
+      "display_code": "operations",
+      "dependency_rest_actions": [
+        {
+          "path": "/forms/audio/historical$",
+          "method": "GET"
+        },
+        {
+          "path": "/forms/temp/audio$",
+          "method": "GET"
+        },
+        {
+          "path": "/reports/audio/lcm$",
+          "method": "GET"
+        },
+        {
+          "path": "/reports/audio/acm$",
+          "method": "GET"
+        },
+        {
+          "path": "/emailReport$",
+          "method": "POST"
+        },
+        {
+          "path": "/emailErrorReport$",
+          "method": "POST"
+        }
+      ],
+      "dependency_ui_toggles": ["CCQA_ANALYTICS_OPERATIONS_VIEWACM"]
+    },
+    {
+      "name": "Edit Forms",
+      "description": "Editing QA monitoring forms",
+      "display_code": "edit-forms",
+      "dependency_ui_toggles": ["CCQA_EDITFORMS_DELETE"],
+      "dependency_rest_actions": [
+        {
+          "path": "/forms/temp/audio/[0-9]+",
+          "method": "DELETE"
+        },
+        {
+          "path": "/forms/audio/historical/[0-9]+",
+          "method": "DELETE"
+        },
+        {
+          "path": "/forms/temp/audio/[0-9]+",
+          "method": "GET"
+        },
+        {
+          "path": "/forms/audio/historical/[0-9]+",
+          "method": "GET"
+        },
+        {
+          "path": "/forms/fields$",
+          "method": "GET"
+        },
+        {
+          "path": "/apps$",
+          "method": "GET"
+        },
+        {
+          "path": "/data/audittracking$",
+          "method": "GET"
+        },
+        {
+          "path": "/employees/qa$",
+          "method": "GET"
+        },
+        {
+          "path": "/employees/rec$",
+          "method": "GET"
+        },
+        {
+          "path": "/data/calltypes$",
+          "method": "GET"
+        },
+        {
+          "path": "/data/framecodes$",
+          "method": "GET"
+        },
+        {
+          "path": "/data/sitenames$",
+          "method": "GET"
+        },
+        {
+          "path": "/forms/scoringcodes$",
+          "method": "GET"
+        },
+        {
+          "path": "/data/categories$",
+          "method": "GET"
+        },
+        {
+          "path": "/forms/fields/audio/calltypes$",
+          "method": "GET"
+        },
+        {
+          "path": "/emailReport$",
+          "method": "POST"
+        },
+        {
+          "path": "/emailErrorReport$",
+          "method": "POST"
+        },
+        {
+          "path": "/forms/audio/historical$",
+          "method": "POST"
+        },
+        {
+          "path": "/forms/temp/audio$",
+          "method": "POST"
+        },
+        {
+          "path": "/forms/audio/historical$",
+          "method": "GET"
+        },
+        {
+          "path": "/forms/temp/audio$",
+          "method": "GET"
+        },
+        {
+          "path": "/forms/audio/audit$",
+          "method": "POST"
+        },
+        {
+          "path": "/forms/temp/audio/audit$",
+          "method": "POST"
+        },
+        {
+          "path": "/forms/audio/audit$",
+          "method": "GET"
+        },
+        {
+          "path": "/forms/temp/audio/audit$",
+          "method": "GET"
+        },
+        {
+          "path": "/forms/audio/historical$",
+          "method": "DELETE"
+        },
+        {
+          "path": "/forms/temp/audio$",
+          "method": "DELETE"
+        },
+        {
+          "path": "/forms/audio/historical$",
+          "method": "PUT"
+        },
+        {
+          "path": "/forms/temp/audio$",
+          "method": "PUT"
+        },
+        {
+          "path": "/reports/temp/audio/acm$",
+          "method": "GET"
+        },
+        {
+          "path": "/reports/audio/acm$",
+          "method": "GET"
+        }
+      ]
     }
   ],
-  "ui_toggles": [],
+  "ui_toggles": [
+    {
+      "name": "CCQA_ANALYTICS_OPERATIONS_VIEWACM",
+      "description": "enables user to see All Call Monitored Report in Operations View"
+    },
+    {
+      "name": "CCQA_EDITFORMS_DELETE",
+      "description": "enables delete feature for editing QA monitoring forms"
+    }
+  ],
   "rest_actions": [
     {
       "path": "/get_config$",
@@ -244,24 +503,6 @@
       ]
     },
     {
-      "path": "/forms/audio/audit/[0-9]+",
-      "display_path": "/forms/audio/audit/:id",
-      "methods": [
-        {
-          "method": "PUT",
-          "description": "Put forms-audio-audit value by record_number",
-          "force_user": true,
-          "force_source_app": false
-        },
-        {
-          "method": "GET",
-          "description": "Get forms-audio-audit value by record_number",
-          "force_user": true,
-          "force_source_app": false
-        }
-      ]
-    },
-    {
       "path": "/forms/audio/historical$",
       "display_path": "/forms/audio/historical",
       "methods": [
@@ -276,6 +517,18 @@
           "description": "Get all forms-audio-historical values",
           "force_user": true,
           "force_source_app": false
+        },
+        {
+          "method": "PUT",
+          "description": "Update all forms-audio-historical values",
+          "force_user": true,
+          "force_source_app": false
+        },
+        {
+          "method": "DELETE",
+          "description": "Delete forms-audio-historical values",
+          "force_user": true,
+          "force_source_app": false
         }
       ]
     },
@@ -284,14 +537,14 @@
       "display_path": "/forms/audio/historical/:id",
       "methods": [
         {
-          "method": "PUT",
-          "description": "Put forms-audio-historical value by record_number",
+          "method": "GET",
+          "description": "Get forms-audio-historical value by record_number",
           "force_user": true,
           "force_source_app": false
         },
         {
-          "method": "GET",
-          "description": "Get forms-audio-historical value by record_number",
+          "method": "DELETE",
+          "description": "Delete forms-audio-historical value by record_number",
           "force_user": true,
           "force_source_app": false
         }
@@ -320,12 +573,6 @@
       "display_path": "/forms/tam/audit/:id",
       "methods": [
         {
-          "method": "PUT",
-          "description": "Put forms-tam-audit value by record_number",
-          "force_user": true,
-          "force_source_app": false
-        },
-        {
           "method": "GET",
           "description": "Get forms-tam-audit value by record_number",
           "force_user": true,
@@ -348,6 +595,18 @@
           "description": "Get all forms-tam-historical values",
           "force_user": true,
           "force_source_app": false
+        },
+        {
+          "method": "PUT",
+          "description": "Update all forms-tam-historical values",
+          "force_user": true,
+          "force_source_app": false
+        },
+        {
+          "method": "DELETE",
+          "description": "Delete forms-audio-historical values",
+          "force_user": true,
+          "force_source_app": false
         }
       ]
     },
@@ -356,14 +615,14 @@
       "display_path": "/forms/tam/historical/:id",
       "methods": [
         {
-          "method": "PUT",
-          "description": "Put forms-tam-historical value by record_number",
+          "method": "GET",
+          "description": "Get forms-tam-historical value by record_number",
           "force_user": true,
           "force_source_app": false
         },
         {
-          "method": "GET",
-          "description": "Get forms-tam-historical value by record_number",
+          "method": "DELETE",
+          "description": "Delete forms-tam-historical value by record_number",
           "force_user": true,
           "force_source_app": false
         }
@@ -538,36 +797,6 @@
       ]
     },
     {
-      "path": "/forms/temp/audio/counter$",
-      "display_path": "/forms/temp/audio/counter",
-      "methods": [
-        {
-          "method": "POST",
-          "description": "Post forms-temp-audio-counter values",
-          "force_user": true,
-          "force_source_app": false
-        }
-      ]
-    },
-    {
-      "path": "/forms/temp/audio/counter/[0-9]+",
-      "display_path": "/forms/temp/audio/counter/:id",
-      "methods": [
-        {
-          "method": "PUT",
-          "description": "Put forms-temp-audio-counter value by ri_id",
-          "force_user": true,
-          "force_source_app": false
-        },
-        {
-          "method": "DELETE",
-          "description": "Delete forms-temp-audio-counter value by ri_id",
-          "force_user": true,
-          "force_source_app": false
-        }
-      ]
-    },
-    {
       "path": "/forms/temp/audio$",
       "display_path": "/forms/temp/audio",
       "methods": [
@@ -582,6 +811,18 @@
           "description": "Get all forms-temp-audio values",
           "force_user": true,
           "force_source_app": false
+        },
+        {
+          "method": "PUT",
+          "description": "Update all forms-temp-audio values",
+          "force_user": true,
+          "force_source_app": false
+        },
+        {
+          "method": "DELETE",
+          "description": "Delete all forms-temp-audio values",
+          "force_user": true,
+          "force_source_app": false
         }
       ]
     },
@@ -589,12 +830,6 @@
       "path": "/forms/temp/audio/[0-9]+",
       "display_path": "/forms/temp/audio/:id",
       "methods": [
-        {
-          "method": "PUT",
-          "description": "Put forms-temp-audio value by record_number",
-          "force_user": true,
-          "force_source_app": false
-        },
         {
           "method": "DELETE",
           "description": "Delete forms-temp-audio value by record_number",
@@ -604,6 +839,24 @@
         {
           "method": "GET",
           "description": "Get forms-temp-audio value by record_number",
+          "force_user": true,
+          "force_source_app": false
+        }
+      ]
+    },
+    {
+      "path": "/forms/temp/audio/audit$",
+      "display_path": "/forms/temp/audio/audit",
+      "methods": [
+        {
+          "method": "POST",
+          "description": "Post forms-temp-audio audit values",
+          "force_user": true,
+          "force_source_app": false
+        },
+        {
+          "method": "GET",
+          "description": "Get all forms-temp-audio audit values",
           "force_user": true,
           "force_source_app": false
         }
@@ -624,6 +877,18 @@
           "description": "Get all forms-temp-tam values",
           "force_user": true,
           "force_source_app": false
+        },
+        {
+          "method": "PUT",
+          "description": "Put forms-temp-tam values",
+          "force_user": true,
+          "force_source_app": false
+        },
+        {
+          "method": "DELETE",
+          "description": "Delete forms-temp-tam values",
+          "force_user": true,
+          "force_source_app": false
         }
       ]
     },
@@ -631,12 +896,6 @@
       "path": "/forms/temp/tam/[0-9]+",
       "display_path": "/forms/temp/tam/:id",
       "methods": [
-        {
-          "method": "PUT",
-          "description": "Put forms-temp-tam value by record_number",
-          "force_user": true,
-          "force_source_app": false
-        },
         {
           "method": "DELETE",
           "description": "Delete forms-temp-tam value by record_number",
@@ -646,6 +905,90 @@
         {
           "method": "GET",
           "description": "Get forms-temp-tam value by record_number",
+          "force_user": true,
+          "force_source_app": false
+        }
+      ]
+    },
+    {
+      "path": "/reports/audio/cmr$",
+      "display_path": "/reports/audio/cmr",
+      "methods": [
+        {
+          "method": "GET",
+          "description": "Get report data for Call Monitoring Report (CMR)",
+          "force_user": true,
+          "force_source_app": false
+        }
+      ]
+    },
+    {
+      "path": "/reports/audio/lcm$",
+      "display_path": "/reports/audio/lcm",
+      "methods": [
+        {
+          "method": "GET",
+          "description": "Get report data for the Last Call Monitored Report (LCM)",
+          "force_user": true,
+          "force_source_app": false
+        }
+      ]
+    },
+    {
+      "path": "/reports/audio/acm$",
+      "display_path": "/reports/audio/acm",
+      "methods": [
+        {
+          "method": "GET",
+          "description": "Get report data for the All Calls Monitored Report (ACM)",
+          "force_user": true,
+          "force_source_app": false
+        }
+      ]
+    },
+    {
+      "path": "/reports/temp/audio/acm$",
+      "display_path": "/reports/temp/audio/acm",
+      "methods": [
+        {
+          "method": "GET",
+          "description": "Get report data for the All Calls Monitored Report (ACM) TEMP",
+          "force_user": true,
+          "force_source_app": false
+        }
+      ]
+    },
+    {
+      "path": "/reports/audio/mca$",
+      "display_path": "/reports/audio/mca",
+      "methods": [
+        {
+          "method": "GET",
+          "description": "Get report data for Monitored Call Alert Report (MCA)",
+          "force_user": true,
+          "force_source_app": false
+        }
+      ]
+    },
+    {
+      "path": "/emailReport$",
+      "display_path": "/emailReport",
+      "methods": [
+        {
+          "method": "POST",
+          "description": "Trigger daily monitoring report email",
+          "force_user": true,
+          "force_source_app": false
+        }
+      ]
+    },
+    {
+      "path": "/emailErrorReport$",
+      "display_path": "/emailErrorReport",
+      "methods": [
+        {
+          "method": "POST",
+          "description": "Trigger system error report email",
           "force_user": true,
           "force_source_app": false
         }

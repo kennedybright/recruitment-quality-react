@@ -14,10 +14,10 @@ module.exports = new Config().extend('conf/webpack.ts.config.js').merge({
     filename: commons.filenameChunkhashTemplate,
     chunkFilename: commons.filenameChunkhashTemplate,
   },
-  performance: {
-    maxEntrypointSize: 2048000,
-    maxAssetSize: 2048000
-  },
+  //performance: { 
+  //  maxEntrypointSize: 2048000, 
+  //  maxAssetSize: 2048000 
+  //},
   plugins: [
     new AssetsPlugin({
       filename: commons.assetsManifestFileName,

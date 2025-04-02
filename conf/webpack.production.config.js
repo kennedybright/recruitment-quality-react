@@ -5,9 +5,11 @@ module.exports = new Config().extend('conf/webpack.deploy-default.config.js').me
   mode: 'production',
   devtool: false,
   optimization: {
+    usedExports: true,
     minimize: true,
     minimizer: [
       new TerserPlugin({
+        parallel: true,
         terserOptions: {
           sourceMap: false,
         },

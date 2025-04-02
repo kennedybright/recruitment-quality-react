@@ -18,10 +18,6 @@ build
 # Tests
 coverage
 .nyc_output
-cypress/videos
-cypress/integration
-cypress/fixtures
-cypress/downloads
 
 # Coding
 .idea

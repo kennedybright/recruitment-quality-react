@@ -53,13 +53,14 @@ module.exports = new Config().merge({
   },
   optimization: {
     splitChunks: {
+      //chunks: 'all',
       cacheGroups: {
         defaultVendors: {
           name: 'vendors',
           chunks: 'all',
           enforce: true,
           priority: 20,
-          test: /node_modules/,
+          test: /node_modules/
         },
         commons: {
           name: 'commons',
@@ -80,13 +81,13 @@ module.exports = new Config().merge({
     // see details:
     // https://webpack.js.org/migrate/5/ (at Level 5: Runtime Errors. section)
     // https://stackoverflow.com/questions/41359504/webpack-bundle-js-uncaught-referenceerror-process-is-not-defined
-    // new webpack.ProvidePlugin({
-    //   process: 'process/browser',
-    // }),
+    //new webpack.ProvidePlugin({
+    //  process: 'process/browser',
+    //}),
     new webpack.DefinePlugin({
       // DON'T delete: for Legacy apps or for 3rd party libs you may need use:
-      // 'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
-      // 'process.env.DEBUG': JSON.stringify(process.env.DEBUG || false),
+      //'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+      //'process.env.DEBUG': JSON.stringify(process.env.DEBUG || false),
       __APP_NAME__: JSON.stringify(commons.appName),
       __APP_VERSION__: JSON.stringify(commons.version),
       __NODE_ENV__: JSON.stringify(process.env.NODE_ENV || 'development'),
@@ -100,6 +101,6 @@ module.exports = new Config().merge({
           timeZone: 'UTC',
         })}`,
       ].join('\n')
-    ),
+    )
   ],
 })

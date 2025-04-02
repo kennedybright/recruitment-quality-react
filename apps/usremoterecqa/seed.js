@@ -15,15 +15,15 @@ module.exports = {
       children: [
         {
           name: 'Audio & SMP QA Form',
-          screenId: 'qa-form-audio-smp',
-          menuType: 'SIDE_NAV',
-        },
-        {
-          name: 'Generate New Reports',
-          screenId: 'generate-report',
+          screenId: 'qaforms-audio-smp',
           menuType: 'SIDE_NAV',
         },
       ],
-    }
+    },
+    {
+      name: 'Generate New Reports',
+      screenId: 'generate-report',
+      menuType: 'SIDE_NAV',
+    },
   ],
 }
