@@ -1,11 +1,11 @@
-.ci_version: &ci_version v1.8.8
+.ci_version: v1.8.8
 include:
-  - project: 'nielsen-media/maf/ci-cd/gitlab-ci-common'
-    ref: *ci_version
+  - project: nielsen-media/maf/ci-cd/gitlab-ci-common
+    ref: v1.8.8
     file:
-      - '/Jobs/v2/stages/base.yml'
-      - '/Jobs/v2/stages/initPipeline.yml'
-      - '/Jobs/v2/stages/bumpVersionmaf.yml'
+      - /Jobs/v2/stages/base.yml
+      - /Jobs/v2/stages/initPipeline.yml
+      # - /Jobs/v2/stages/bumpVersionmaf.yml
 
 .gitlabRunnerTags:
   tags:
@@ -17,26 +17,26 @@ stages:
   - mafDeploymentManifest
   - mafDeployFrontend
 
-variables: 
-  CI_REPO_BRANCH: *ci_version
-  INSTALL_MODULES: "true"
-  
+variables:
+  CI_REPO_BRANCH: v1.8.8
+  INSTALL_MODULES: 'true'
+
   ENV:
-    value: "alpha"
+    value: alpha
     options:
-      - "alpha"
-      - "prod"
-    description: "The environment to be deployed. alpha or prod ?"
+      - alpha
+      - prod
+    description: The environment to be deployed. alpha or prod ?
   DEPLOY_TYPE:
-    value: "assets"
+    value: assets
     options:
-      - "assets"
-      - "manifest"
-    description: "The configuration to be deployed. assets or manifest?"
+      - assets
+      - manifest
+    description: The configuration to be deployed. assets or manifest?
   VERSION:
-    value: ""
-    description: "Version of your frontend app"
-  
+    value: ''
+    description: Version of your frontend app
+
   ##================== *** initPipeline *** ================##
   USE_GITLAB_PACKAGE_REGISTRY: 'true'
   PACKAGE_MANGER: yarn
@@ -51,7 +51,7 @@ variables:
   APPLICATION_NAME: usremoterecqa
   MAF_MANIFEST_PATH: ./apps/usremoterecqa/usremoterecqa.json
   ##================== *** END deployManifest END *** ================##
-  
+
   # BUMP_VERSION_TYPE: 'semantic'
   GITLAB_REGISTRY_DEPLOY: 'true'
   PRE_PUBLISH_COMMANDS: build:prod
@@ -76,15 +76,22 @@ variables:
     - echo "CI_PIPELINE_SOURCE - $CI_PIPELINE_SOURCE"
     - echo "CI_COMMIT_REF_NAME $CI_COMMIT_REF_NAME"
     - echo "CI_REPO_BRANCH $CI_REPO_BRANCH"
-    - if ! [[ -d continuous-integration ]] ; then git clone -b $CI_REPO_BRANCH https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/nielsen-media/maf/ci-cd/gitlab-ci-common.git continuous-integration; fi
+    - if ! [[ -d continuous-integration ]] ; then git clone -b $CI_REPO_BRANCH
+      https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/nielsen-media/maf/ci-cd/gitlab-ci-common.git
+      continuous-integration; fi
     - cd continuous-integration/utils; . node_backend_helper.sh; cd -
-    - if ! configureNpmCreds $NPM_USER $NPM_PASS; then installPreRunUtilsForAlpineImage; configureNpmCreds $NPM_USER $NPM_PASS; fi
-    - echo "Perform command - mv $CI_PROJECT_DIR/node_modules $CI_PROJECT_DIR/$SCRIPTS_DIR/node_modules || true || true. If it's the same directory, failure is OK."
-    - mv $CI_PROJECT_DIR/node_modules $CI_PROJECT_DIR/$SCRIPTS_DIR/node_modules || true
+    - if ! configureNpmCreds $NPM_USER $NPM_PASS; then
+      installPreRunUtilsForAlpineImage; configureNpmCreds $NPM_USER $NPM_PASS;
+      fi
+    - echo "Perform command - mv $CI_PROJECT_DIR/node_modules
+      $CI_PROJECT_DIR/$SCRIPTS_DIR/node_modules || true || true. If it's the
+      same directory, failure is OK."
+    - mv $CI_PROJECT_DIR/node_modules $CI_PROJECT_DIR/$SCRIPTS_DIR/node_modules
+      || true
     - setNpmrc $SCRIPTS_DIR
   image:
     name: registry.gitlab.com/nielsen-media/maf/maf-public/packages/cicd/node:18.15.0
-    
+
 deploymentManifest:
   extends: .deployBase
   stage: mafDeploymentManifest
@@ -96,10 +103,10 @@ deploymentManifest:
     - installMafDeployUtils
     - ENV_UPPER_CASE=${ENV^^}
     - maf-cli get manifest --app-name $APPLICATION_NAME
-    - runDeployUtil ${ENV_UPPER_CASE} $APPLICATION_NAME $MAF_APP_TOKEN "manifest" "./${APPLICATION_NAME}.json"
+    - runDeployUtil ${ENV_UPPER_CASE} $APPLICATION_NAME $MAF_APP_TOKEN
+      "manifest" "./${APPLICATION_NAME}.json"
   rules:
-    - if: '$ENV!="" && $APPLICATION_NAME!="" && $DEPLOY_TYPE=="manifest"' 
-
+    - if: $ENV!="" && $APPLICATION_NAME!="" && $DEPLOY_TYPE=="manifest"
 
 deployFrontend:
   extends: .deployBase
@@ -113,7 +120,9 @@ deployFrontend:
     - ARTIFACT_APP_NAME=$APPLICATION_NAME
     - installMafDeployUtils
     - ENV_UPPER_CASE=${ENV^^}
-    - "echo 'deploy frontend from gitlab' app- $ARTIFACT_REPOSITORY, file $ARTIFACT_APP_NAME, version $VERSION"
+    - echo 'deploy frontend from gitlab' app- $ARTIFACT_REPOSITORY, file
+      $ARTIFACT_APP_NAME, version $VERSION
     - deployFrontendApplication $ENV $VERSION || exit 1
   rules:
-    - if: '$ENV!="" && $APPLICATION_NAME!="" && $DEPLOY_TYPE=="assets" && $VERSION!="" '
+    - if: '$ENV!="" && $APPLICATION_NAME!="" && $DEPLOY_TYPE=="assets" && $VERSION!=""
+        '
