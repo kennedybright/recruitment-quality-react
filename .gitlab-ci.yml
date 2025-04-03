@@ -18,6 +18,7 @@ stages:
   - mafDeployFrontend
 
 variables:
+  PACKAGE_MANAGER: "npm"
   CI_REPO_BRANCH: v1.8.8
   INSTALL_MODULES: 'true'
 
@@ -61,6 +62,36 @@ variables:
   LINTER_COMMAND: lint
 
 #============== JOBS =============#
+
+.base:
+  extends: .gitlabRunnerTags
+  image: amazonlinux:2023
+  before_script:
+    - echo $GITLAB_RUNNERS_EKS_DASHBOARD_URL
+    - echo $CI_PIPELINE_IID
+    - echo $CI_COMMIT_REF_SLUG
+    - echo $CI_COMMIT_REF_NAME
+    - echo $CI_COMMIT_BRANCH
+    - echo $CI_DEFAULT_BRANCH
+    - echo $CI_PIPELINE_SOURCE
+    - echo $CI_MERGE_REQUEST_IID
+    - echo $CI_PROJECT_DIR
+    - echo $CI_PROJECT_PATH
+    - echo $CI_NODE_VERSION
+    - echo $PACKAGE_DIR
+    - echo $PACKAGE_MANAGER
+    - echo $NPM_LOG_LEVEL
+    - echo $APP_LOG_LEVEL
+    - echo $BASH_UTILS_LOG_LEVEL
+    - echo $GITLAB_TOKEN_USER
+    - if [ "$BASH_UTILS_LOG_LEVEL" == "debug" ]; then set -o; fi
+  cache:
+    - key: init-node-modules-$MAF_CI_VERSION
+      paths:
+      - continuous-integration/
+      - .npmrc
+      policy: pull
+
 
 .deployBase:
   environment:
