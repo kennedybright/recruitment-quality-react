@@ -12,20 +12,6 @@ include:
     file:
       - '/gitlab-templates/ecr/template.yml'
 
-build:
-  stage: build
-  extends: .release-image
-  variables:
-    CI_REGISTRY_IMAGE: registry.gitlab.com/nielsen-media/maf/maf-public/packages/cicd/node:18.15.0 # 853826018359.dkr.ecr.us-east-1.amazonaws.com/maf/ci-cd/docker-node-ci
-  tags:
-   - maf-dev
-  only:
-   - tags
-
-.gitlabRunnerTags:
-  tags:
-    - maf-dev
-
 stages:
   - build
   - mafInit
@@ -34,7 +20,7 @@ stages:
   - mafDeployFrontend
 
 variables:
-  PACKAGE_MANAGER: "npm"
+  PACKAGE_MANAGER: "yarn"
   CI_REPO_BRANCH: v1.8.8
   INSTALL_MODULES: 'true'
 
@@ -78,6 +64,9 @@ variables:
   LINTER_COMMAND: lint
 
 #============== JOBS =============#
+.gitlabRunnerTags:
+  tags:
+    - maf-dev
 
 .base:
   extends: .gitlabRunnerTags
@@ -138,6 +127,16 @@ variables:
     - setNpmrc $SCRIPTS_DIR
   image:
     name: registry.gitlab.com/nielsen-media/maf/maf-public/packages/cicd/node:18.15.0
+
+build:
+  stage: build
+  extends: .release-image
+  variables:
+    CI_REGISTRY_IMAGE: registry.gitlab.com/nielsen-media/maf/maf-public/packages/cicd/node:18.15.0 # 853826018359.dkr.ecr.us-east-1.amazonaws.com/maf/ci-cd/docker-node-ci
+  tags:
+   - maf-dev
+  only:
+   - tags
 
 deploymentManifest:
   extends: .deployBase
