@@ -72,7 +72,6 @@ variables:
   extends: .gitlabRunnerTags
   image: registry.gitlab.com/nielsen-media/maf/maf-public/packages/cicd/node:18.15.0 # image: 853826018359.dkr.ecr.us-east-1.amazonaws.com/maf/ci-cd/docker-node-ci #amazonlinux:2023
   before_script:
-    # - echo $GITLAB_RUNNERS_EKS_DASHBOARD_URL
     - echo $ENV
     - echo $APPLICATION_NAME
     - echo $DEPLOY_TYPE
@@ -150,7 +149,7 @@ deploymentManifest:
     - TOKEN_VARIABLE_NAME=${FORMATED_APP_NAME^^}_APP_TOKEN
     - echo "using {TOKEN_VARIABLE_NAME variable as APP_TOKEN"
     - MAF_APP_TOKEN=${!TOKEN_VARIABLE_NAME}
-    - logInfo "About to install @nielsen-media/maf-cli"
+    - echo "About to install @nielsen-media/maf-cli"
     - yarn add -g @nielsen-media/maf-cli --force
     - ENV_UPPER_CASE=${ENV^^}
     - maf-cli get manifest --app-name $APPLICATION_NAME
@@ -172,7 +171,7 @@ deployFrontend:
     - echo ${ARTIFACT_REPOSITORY}
     - ARTIFACT_APP_NAME=$APPLICATION_NAME
     - echo ${ARTIFACT_APP_NAME}
-    - logInfo "About to install @nielsen-media/maf-cli"
+    - echo "About to install @nielsen-media/maf-cli"
     - yarn add -g @nielsen-media/maf-cli --force
     - ENV_UPPER_CASE=${ENV^^}
     - echo 'deploy frontend from gitlab' app- $ARTIFACT_REPOSITORY, file
