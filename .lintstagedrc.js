@@ -1,6 +1,6 @@
-// module.exports = {
-//   "*.{js,jsx,ts,tsx}": [
-//     "eslint --fix",
-//     "git add -f"
-//   ]
-// }
+module.exports = {
+  "*.{js,jsx,ts,tsx}": [
+    "eslint --fix",
+    "git add -f"
+  ]
+}
