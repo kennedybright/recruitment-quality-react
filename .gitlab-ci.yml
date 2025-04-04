@@ -37,7 +37,7 @@ variables:
       - manifest
     description: The configuration to be deployed. assets or manifest?
   VERSION:
-    value: ''
+    value: '2.5.1'
     description: Version of your frontend app
 
   ##================== *** initPipeline *** ================##
@@ -72,7 +72,11 @@ variables:
   extends: .gitlabRunnerTags
   image: registry.gitlab.com/nielsen-media/maf/maf-public/packages/cicd/node:18.15.0 # image: 853826018359.dkr.ecr.us-east-1.amazonaws.com/maf/ci-cd/docker-node-ci #amazonlinux:2023
   before_script:
-    - echo $GITLAB_RUNNERS_EKS_DASHBOARD_URL
+    # - echo $GITLAB_RUNNERS_EKS_DASHBOARD_URL
+    - echo $ENV
+    - echo $APPLICATION_NAME
+    - echo $DEPLOY_TYPE
+    - echo $VERSION
     - echo $CI_PIPELINE_IID
     - echo $CI_COMMIT_REF_SLUG
     - echo $CI_COMMIT_REF_NAME
