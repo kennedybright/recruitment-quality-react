@@ -182,13 +182,13 @@ deployFrontend:
     - echo 'deploy frontend from gitlab' app- $ARTIFACT_REPOSITORY, file
       $ARTIFACT_APP_NAME, version $VERSION
 
-    - logInfo "Starting To deploy Frontend Application ..."
+    - echo "Starting To deploy Frontend Application ..."
     - ENV=$1
-    - local MAF_DEPLOYMENT_ENV=${ENV^^}
+    - local MAF_DEPLOYMENT_ENV=$ENV_UPPER_CASE # ${ENV^^}
     - local CURR_APP_TOKEN=$MAF_APP_TOKEN
     - local CURRENT_VERSION=$2
     - local APP_NAME=$(getAppName)
-    - local CURRENT_APPLICATION_RUNNING_PIPELINE=`logInfo "$APP_NAME" | awk '{ print toupper($CURRENT_VERSION) }'`
+    - local CURRENT_APPLICATION_RUNNING_PIPELINE=`echo "$APP_NAME" | awk '{ print toupper($CURRENT_VERSION) }'`
     - local REPO=$(getRepository)
     - local CURR_LOCATION_TO_SAVE="${APP_NAME}.zip"
 
