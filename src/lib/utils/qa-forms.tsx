@@ -82,9 +82,8 @@ export function validateForms(appID:number, forms:Form[]):any[] {
     // check required fields
     const formsMissingReqs = validateMissingReqs(
       forms, 
-      ["audio_smp", "ri_id", "ri_shift", "site_name_id", "call_type_id", "frame_code_id", "call_direction"]
+      ["audio_smp", "ri_id", "ri_shift", "sample_id", "site_name_id", "call_type_id", "frame_code_id", "call_direction"]
     )
-    console.log(formsMissingReqs)
 
     // form-specific errors based on application type (eg. Audio/SMP vs. TAM)
     let formErrors = [] 
@@ -111,8 +110,6 @@ export function validateForms(appID:number, forms:Form[]):any[] {
 function validateMissingReqs(forms:Form[], reqFields:string[]) {
   // check required fields
   const formsMissingReqFields = forms.map((form) => {
-    if (form.fields.find(field => field.label === "audio_smp").value === "SMP") reqFields.push("sample_id") // if SMP form, add Sample ID to required fields
-    
     const missingFields = form.fields.filter((field) => reqFields.includes(field.label)).filter((field) => field.value === undefined || field.value === null || field.value === "")?.map((field) => field.label)
     if (missingFields.length > 0) {
       return { formID: form.formID, fixReqFields: missingFields }
@@ -147,7 +144,7 @@ export async function submitAllForms(appID:number, forms:Form[]):Promise<any[]> 
   
     try {
       let responses = []
-      let batchSize = 5
+      let batchSize = 5 //25
       const batchSubmitForms = async(formsToSubmit, batchSize) => {
         for (let i = 0; i < forms.length; i += batchSize) {
           const batch = formsToSubmit.slice(i, i + batchSize)

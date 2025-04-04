@@ -2,7 +2,7 @@
   "compilerOptions": {
     "noImplicitAny": false,
     "target": "ES2017",
-    "lib": ["es2017", "es6", "dom", "dom.iterable", "esnext"],
+    "lib": ["es2017", "ES6", "dom", "dom.iterable", "esnext"],
     "declaration": true,
     "declarationMap": true,
     "declarationDir": "../panel-recruitment-quality-frontend/build/usremoterecqa/types",

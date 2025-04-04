@@ -297,19 +297,12 @@ const QAFormBulkEditableAudio = () => {
   const [bulkField, setBulkField] = useState<string>(undefined)
   const [bulkNewValue, setBulkNewValue] = useState<any>(undefined)
   const [bulkEditClicked, setBulkEditClicked] = useState<boolean>(false)
-
-  const applyBulkEdit = (({ row, column, value }) => {
-    console.log("applyBulkEdit // row, column, value: ", row, column, value)
-    updateBulkFormChange(row.record_number, column.id, value)
-  })
   
   const onBulkDataChange = () => {
     setBulkEditClicked(false)
     const selectedRows = table.getSelectedRowModel().rows
     selectedRows.forEach((selected) => {
-      const rowData = selected.original
       const columnData = table.getColumn(bulkField)
-
       handleDataChange({row: selected, column: columnData, value: bulkNewValue})
     })
   }
@@ -327,18 +320,14 @@ const QAFormBulkEditableAudio = () => {
     setBulkNewValue(undefined)
   }
 
+  // Calculate the final table data results
   const tableData = useMemo(() => {
     let filteredData = data
-    console.log("data: ", data)
-    console.log("filterBarData: ", filterBarData)
     if (filterBarData?.length === 0) filteredData = []
     else if (filterBarData?.length) filteredData = filterBarData
-    console.log("tableData: ", filteredData)
+
     return filteredData
   }, [data, filterBarData])
-  
-  console.log("Bulk mode // selections: ", selectedIds, selectedRowsData)
-  console.log("Bulk mode // Form changes: ", formChanges)
 
   return (
     <Flex column gap={aliasTokens.space350}>

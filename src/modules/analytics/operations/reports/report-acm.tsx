@@ -1,6 +1,6 @@
 // Formatting for the All Calls Monitored Report
 
-import { FC, useEffect, useState } from 'react'
+import { FC, useEffect, useMemo, useState } from 'react'
 import Text from '@nielsen-media/maf-fc-text'
 import Flex from '@nielsen-media/maf-fc-flex'
 import Table2, { Table2Props, TableData, ColumnDef, NumberCellProps, TextCellProps } from '@nielsen-media/maf-fc-table2'
@@ -87,20 +87,21 @@ const ACMTable = <T,>({reportData, ...props}: ACMTableProps<T>) => {
   
   // Generate the table data and columns
   const { data, columns } = useMakeTable({ initData: reportData, extensions: extensions, columnProps: columnPropsList })
-  const [tableData, setTableData] = useState<TableData[]>(data) // rendered table data with final filtered results
+  // const [tableData, setTableData] = useState<TableData[]>(data) // rendered table data with final filtered results
   const [tableColumns, setTableColumns] = useState<ColumnDef<TableData>[]>(columns) // rendered table columns
 
   // ------------------------------------------------------------------------------- //
 
   // useStates for the Adjustment Bar
   const [filterValue, setFilterValue] = useState({opened: false, filterColumnId: ''}) // filter bar state
-  const [filterBarData, setFilterBarData] = useState<typeof data>([]) // filtered data from the Adjustment Bar
+  const [filterBarData, setFilterBarData] = useState<typeof data>(undefined) // filtered data from the Adjustment Bar
 
   // useStates for the Date Range Picker
   const [dates, setDates] = useState<[PartialPickerDate, PartialPickerDate]>([new Date().setMonth(new Date().getMonth() - 6), new Date()]) // set initial dates: last 6 Months
   const [datePickerData, setDatePickerData] = useState<typeof data>([]) // filtered data from the Date Range Picker
 
-  const matchesDateRange = <T,>(item, dates: [PartialPickerDate, PartialPickerDate]): boolean => { 
+  const matchesDateRange = <T,>(item: T, dates: [PartialPickerDate, PartialPickerDate]): boolean => {
+    if (!dates) return true 
     const dateRange = [new Date(dates[0]), new Date(dates[1])]
     return (
       new Date(item["record_date"]) > dateRange[0] 
@@ -110,15 +111,10 @@ const ACMTable = <T,>({reportData, ...props}: ACMTableProps<T>) => {
 
   const handleDateRangeChange: OnChangeHandler = (({ value }: { value: [PartialPickerDate, PartialPickerDate]}) => {
     setDates(value)
-    setDatePickerData(
-      data.filter((item) => {
-        return matchesDateRange(item, value)
-      })
-    )
   })
 
   const handleDateRangeReset = () => {
-    setDatePickerData(data)
+    setDates(undefined)
   }
 
   const matchesFilters = <T,>(item: T, filters: FilterItem[], operator: FilterOperator): boolean => {
@@ -136,10 +132,10 @@ const ACMTable = <T,>({reportData, ...props}: ACMTableProps<T>) => {
   const handleAdjustmentBarChange: (state?: AdjustmentBarContextStates) => void = state => {
     const { filters, operator } = state?.filtersState || {}
     const enabledFilters = filters.filter(f => f["value"] !== "") // filter out empty search filters
+    if (enabledFilters.filter(Boolean).length === 0) return setFilterBarData(undefined)
 
-    setFilterBarData(
-      data.filter(item => matchesFilters(item, enabledFilters as FilterItem[], operator as FilterOperator))
-    )
+    const filteredTableData = data.filter(item => { return (matchesFilters(item, enabledFilters as FilterItem[], operator as FilterOperator)) })
+    setFilterBarData(filteredTableData)
 
     setTableColumns(
       columns.filter((column: JSONObject) =>
@@ -150,20 +146,33 @@ const ACMTable = <T,>({reportData, ...props}: ACMTableProps<T>) => {
     )
   }
 
-  // Calculate the final results between the Date Range Picker & Adjustment Bar
-  useEffect(() => {
-    if (datePickerData.length) {
-      setTableData(
-        datePickerData.filter((item) => 
-          filterBarData.some((filteredItem) => filteredItem.id === item.id)
-        )
-      )
-    } else if (!filterBarData.length) {
-      setTableData([])
-    } else if (filterBarData.length) {
-      setTableData(filterBarData)
-    }
-  }, [datePickerData, filterBarData])
+  // Calculate the final table data results between the Date Range Picker & Adjustment Bar
+  // useEffect(() => {
+  //   if (datePickerData.length) {
+  //     setTableData(
+  //       datePickerData.filter((item) => 
+  //         filterBarData.some((filteredItem) => filteredItem.id === item.id)
+  //       )
+  //     )
+  //   } else if (!filterBarData.length) {
+  //     setTableData([])
+  //   } else if (filterBarData.length) {
+  //     setTableData(filterBarData)
+  //   }
+  // }, [datePickerData, filterBarData])
+  const tableData = useMemo(() => {
+    // filtered date data
+    let filteredData = data.filter((item) => {
+      return matchesDateRange(item, dates)
+    })
+
+    if (filterBarData?.length === 0) filteredData = []
+    else if (filterBarData?.length) filteredData = filteredData.filter((item) => 
+      filterBarData.some((filteredItem) => filteredItem.id === item.id)
+    )
+    
+    return filteredData
+  }, [data, filterBarData])
 
   return (
     <Flex column gap={aliasTokens.space350}>
@@ -201,10 +210,7 @@ const ACMTable = <T,>({reportData, ...props}: ACMTableProps<T>) => {
           description: 'There are no records to display. Try adjusting your filters or check back later.'
         }}
         expanding={{
-          renderSubComponent: ({ row }) => {
-            console.log("Expanded row: ", row.original)
-            return <QAFormSingleView form={row.original} />
-          }
+          renderSubComponent: ({ row }) => <QAFormSingleView form={row.original} />
         }}
       >
         <Table2.Header className='acm-table-header'>

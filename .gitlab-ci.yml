@@ -7,11 +7,27 @@ include:
       - /Jobs/v2/stages/initPipeline.yml
       # - /Jobs/v2/stages/bumpVersionmaf.yml
 
+  - project: 'nielsen-media/me/planning/infra/gitlab-ci-tools'
+    ref: 4.4.0
+    file:
+      - '/gitlab-templates/ecr/template.yml'
+
+build:
+  stage: build
+  extends: .release-image
+  variables:
+    CI_REGISTRY_IMAGE: 853826018359.dkr.ecr.us-east-1.amazonaws.com/maf/ci-cd/docker-node-ci
+  tags:
+   - maf-dev
+  only:
+   - tags
+
 .gitlabRunnerTags:
   tags:
     - maf-dev
 
 stages:
+  - build
   - mafInit
   # - mafBumpVersion
   - mafDeploymentManifest
@@ -65,7 +81,7 @@ variables:
 
 .base:
   extends: .gitlabRunnerTags
-  image: amazonlinux:2023
+  image: 853826018359.dkr.ecr.us-east-1.amazonaws.com/maf/ci-cd/docker-node-ci #amazonlinux:2023
   before_script:
     - echo $GITLAB_RUNNERS_EKS_DASHBOARD_URL
     - echo $CI_PIPELINE_IID

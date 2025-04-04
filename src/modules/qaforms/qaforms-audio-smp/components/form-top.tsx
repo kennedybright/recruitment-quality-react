@@ -222,7 +222,8 @@ const QAFormTop: FC = () => {
                                     className='sample-id'
                                     label="Sample ID"
                                     value={!activeFields.find((field)=> field.label === "sample_id").value ? watch("sample_id") : activeFields.find((field)=> field.label === "sample_id").value}
-                                    size='compact' 
+                                    size='compact'
+                                    required 
                                     data-selector='sample_id'
                                     onChange={(e) => { updateField('sample_id', e.target.value) }}
                                     error={activeFields.find((field)=> field.label === "sample_id").value?.length > 0 && !(activeFields.find((field)=> field.label === "sample_id").value?.match(/^[0-9]+$/))}

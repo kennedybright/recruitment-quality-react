@@ -1,5 +1,4 @@
 import type { MAFInterface } from '@nielsen-media/maf-frontend-layer'
-//import Apollo from './modules/qaforms-audio-smp/shared/apollo'
 
 export const FOUNDATION_ID = '#starter-react-based'
 

@@ -1,6 +1,6 @@
 // Formatting for the Last Call Monitored Report
 
-import { FC, useEffect, useState } from 'react'
+import { FC, useEffect, useMemo, useState } from 'react'
 import Text from '@nielsen-media/maf-fc-text'
 import Flex from '@nielsen-media/maf-fc-flex'
 import Table2, { ColumnDef, NumberCellProps, Table2Props, TableData, TextCellProps } from '@nielsen-media/maf-fc-table2'
@@ -52,14 +52,13 @@ const LCMTable: FC<LCMTableProps> = ({reportData, ...props}) => {
 
   // Generate the table data and columns
   const { data, columns } = useMakeTable({ initData: reportData, extensions: extensions, columnProps: columnPropsList })
-  const [tableData, setTableData] = useState<TableData[]>(data) // rendered table data with final filtered results
   const [tableColumns, setTableColumns] = useState<ColumnDef<TableData>[]>(columns) // rendered table columns
   
   // ------------------------------------------------------------------------------- //
   
   // useStates for the Adjustment Bar
   const [filterValue, setFilterValue] = useState({opened: false, filterColumnId: ''}) // filter bar state
-  const [filterBarData, setFilterBarData] = useState<TableData[]>([]) // filtered data from the Adjustment Bar
+  const [filterBarData, setFilterBarData] = useState<TableData[]>(undefined) // filtered data from the Adjustment Bar
   
   const matchesFilters = (item: ReportLCM, filters: FilterItem[], operator: FilterOperator): boolean => {
     const filterCheck = ({ fieldId, value }: FilterItem) => {
@@ -76,20 +75,19 @@ const LCMTable: FC<LCMTableProps> = ({reportData, ...props}) => {
   const handleAdjustmentBarChange: (state?: AdjustmentBarContextStates) => void = state => {
     const { filters, operator } = state?.filtersState || {}
     const enabledFilters = filters.filter(f => f["value"] !== "") // filter out empty search filters
-  
-    setFilterBarData(
-      data.filter(item => { return (matchesFilters(item, enabledFilters as FilterItem[], operator as FilterOperator)) })
-    )
+
+    const filteredTableData = data.filter(item => { return (matchesFilters(item, enabledFilters as FilterItem[], operator as FilterOperator)) })
+    setFilterBarData(filteredTableData)
   }
 
-  // Calculate the final results from the Adjustment Bar
-  useEffect(() => {
-    if (!filterBarData.length) {
-      setTableData([])
-    } else {
-      setTableData(filterBarData)
-    }
-  }, [filterBarData])
+  // Calculate the final table data results
+  const tableData = useMemo(() => {
+    let filteredData = data
+    if (filterBarData?.length === 0) filteredData = []
+    else if (filterBarData?.length) filteredData = filterBarData
+
+    return filteredData
+  }, [data, filterBarData])
 
   return (
     <Flex>
@@ -175,7 +173,7 @@ export const LCMReport: FC = () => {
           tooltip="
             The Last Call Monitored Report tracks all currently active RIs and their monitoring history within
             the past year. This report helps ensure consistent and even monitoring coverage and identifies RIs
-            who may need more monitoring evaluations.
+            who may need more monitoring evaluations. ***Date difference is in hours.
           "
         />
       </Flex>
