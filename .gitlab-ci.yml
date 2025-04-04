@@ -91,7 +91,10 @@ variables:
     - echo $NPM_LOG_LEVEL
     - echo $APP_LOG_LEVEL
     - echo $BASH_UTILS_LOG_LEVEL
-    - echo $GITLAB_TOKEN_USER
+    - echo $MAF_APP_TOKEN_${ENV}
+    - echo $MAF_API_TOKEN_${ENV}
+    - echo $CENTRALIZED_PROJECT_ID
+    - echo $GITLAB_TOKEN
     - if [ "$BASH_UTILS_LOG_LEVEL" == "debug" ]; then set -o; fi
   cache:
     - key: init-node-modules-$MAF_CI_VERSION
@@ -115,19 +118,20 @@ variables:
     - echo "CI_PIPELINE_SOURCE - $CI_PIPELINE_SOURCE"
     - echo "CI_COMMIT_REF_NAME $CI_COMMIT_REF_NAME"
     - echo "CI_REPO_BRANCH $CI_REPO_BRANCH"
-    - if ! [[ -d continuous-integration ]] ; then git clone -b $CI_REPO_BRANCH
-      https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/nielsen-media/maf/ci-cd/gitlab-ci-common.git
-      continuous-integration; fi
-    - cd continuous-integration/utils; . node_backend_helper.sh; cd -
-    - if ! configureNpmCreds $NPM_USER $NPM_PASS; then
-      installPreRunUtilsForAlpineImage; configureNpmCreds $NPM_USER $NPM_PASS;
-      fi
-    - echo "Perform command - mv $CI_PROJECT_DIR/node_modules
-      $CI_PROJECT_DIR/$SCRIPTS_DIR/node_modules || true || true. If it's the
-      same directory, failure is OK."
-    - mv $CI_PROJECT_DIR/node_modules $CI_PROJECT_DIR/$SCRIPTS_DIR/node_modules
-      || true
+    # - if ! [[ -d continuous-integration ]] ; then git clone -b $CI_REPO_BRANCH
+    #   https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/nielsen-media/maf/ci-cd/gitlab-ci-common.git
+    #   continuous-integration; fi
+    # - cd continuous-integration/utils; . node_backend_helper.sh; cd -
+    # - if ! configureNpmCreds $NPM_USER $NPM_PASS; then
+    #   installPreRunUtilsForAlpineImage; configureNpmCreds $NPM_USER $NPM_PASS;
+    #   fi
+    # - echo "Perform command - mv $CI_PROJECT_DIR/node_modules
+    #   $CI_PROJECT_DIR/$SCRIPTS_DIR/node_modules || true || true. If it's the
+    #   same directory, failure is OK."
+    # - mv $CI_PROJECT_DIR/node_modules $CI_PROJECT_DIR/$SCRIPTS_DIR/node_modules
+    #   || true
     # - setNpmrc $SCRIPTS_DIR
+    - echo .npmrc
     - yarn install
   image:
     name: registry.gitlab.com/nielsen-media/maf/maf-public/packages/cicd/node:18.15.0
@@ -147,9 +151,8 @@ deploymentManifest:
   stage: mafDeploymentManifest
   script:
     - FORMATED_APP_NAME="${APPLICATION_NAME/-/_}"
-    - TOKEN_VARIABLE_NAME=${FORMATED_APP_NAME^^}_APP_TOKEN
-    - echo "using {TOKEN_VARIABLE_NAME variable as APP_TOKEN"
-    - MAF_APP_TOKEN=${!TOKEN_VARIABLE_NAME}
+    - MAF_APP_TOKEN=$MAF_APP_TOKEN${ENV^^}
+    - echo $MAF_APP_TOKEN
     - echo "About to install @nielsen-media/maf-cli"
     - yarn add -D @nielsen-media/maf-cli --force
     - ENV_UPPER_CASE=${ENV^^}
@@ -164,6 +167,8 @@ deployFrontend:
   stage: mafDeployFrontend
   script:
     - FORMATED_APP_NAME="${APPLICATION_NAME/-/_}"
+    - MAF_APP_TOKEN=$MAF_APP_TOKEN${ENV^^}
+    - echo ${MAF_APP_TOKEN}
     - MAF_APP_TOKEN="APP_TOKEN_${ENV^^}"
     - echo ${MAF_APP_TOKEN}
     - ARTIFACT_REPOSITORY_VARIABLE_NAME=${FORMATED_APP_NAME^^}_ARTIFACT_REPOSITORY
