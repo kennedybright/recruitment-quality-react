@@ -184,13 +184,13 @@ deployFrontend:
 
     - echo "Starting To deploy Frontend Application ..."
     - ENV=$1
-    - local MAF_DEPLOYMENT_ENV=$ENV_UPPER_CASE # ${ENV^^}
-    - local CURR_APP_TOKEN=$MAF_APP_TOKEN
-    - local CURRENT_VERSION=$2
-    - local APP_NAME=$(getAppName)
-    - local CURRENT_APPLICATION_RUNNING_PIPELINE=`echo "$APP_NAME" | awk '{ print toupper($CURRENT_VERSION) }'`
-    - local REPO=$(getRepository)
-    - local CURR_LOCATION_TO_SAVE="${APP_NAME}.zip"
+    - MAF_DEPLOYMENT_ENV=$ENV_UPPER_CASE # ${ENV^^}
+    - CURR_APP_TOKEN=$MAF_APP_TOKEN
+    - CURRENT_VERSION=$2
+    - APP_NAME=$(getAppName)
+    - CURRENT_APPLICATION_RUNNING_PIPELINE=`echo "$APP_NAME" | awk '{ print toupper($CURRENT_VERSION) }'`
+    - REPO=$(getRepository)
+    - CURR_LOCATION_TO_SAVE="${APP_NAME}.zip"
 
     - downloadCurrentArtifactFromGitlab $REPO $APP_NAME $CURRENT_VERSION $CURR_LOCATION_TO_SAVE
     - runDeployUtil $MAF_DEPLOYMENT_ENV $CURRENT_APPLICATION_RUNNING_PIPELINE $CURR_APP_TOKEN "assets" $CURR_LOCATION_TO_SAVE || exit 1
