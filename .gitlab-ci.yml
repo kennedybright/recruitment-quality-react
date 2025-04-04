@@ -128,6 +128,7 @@ variables:
     - mv $CI_PROJECT_DIR/node_modules $CI_PROJECT_DIR/$SCRIPTS_DIR/node_modules
       || true
     - setNpmrc $SCRIPTS_DIR
+    - yarn config set registry https://registry.npmjs.org
     - yarn install
   image:
     name: registry.gitlab.com/nielsen-media/maf/maf-public/packages/cicd/node:18.15.0
