@@ -167,21 +167,32 @@ deployFrontend:
   stage: mafDeployFrontend
   script:
     - FORMATED_APP_NAME="${APPLICATION_NAME/-/_}"
-    - MAF_APP_TOKEN=$MAF_APP_TOKEN${ENV^^}
-    - echo ${MAF_APP_TOKEN}
-    - MAF_APP_TOKEN="APP_TOKEN_${ENV^^}"
-    - echo ${MAF_APP_TOKEN}
+    - MAF_APP_TOKEN=$APP_TOKEN_${ENV^^}
+    - echo $MAF_APP_TOKEN
     - ARTIFACT_REPOSITORY_VARIABLE_NAME=${FORMATED_APP_NAME^^}_ARTIFACT_REPOSITORY
     - echo ${ARTIFACT_REPOSITORY_VARIABLE_NAME}
     - ARTIFACT_REPOSITORY=${!ARTIFACT_REPOSITORY_VARIABLE_NAME}
     - echo ${ARTIFACT_REPOSITORY}
     - ARTIFACT_APP_NAME=$APPLICATION_NAME
     - echo ${ARTIFACT_APP_NAME}
+
     - echo "About to install @nielsen-media/maf-cli"
     - yarn add -D @nielsen-media/maf-cli --force
     - ENV_UPPER_CASE=${ENV^^}
     - echo 'deploy frontend from gitlab' app- $ARTIFACT_REPOSITORY, file
       $ARTIFACT_APP_NAME, version $VERSION
-    - deployFrontendApplication $ENV $VERSION || exit 1
+
+    - logInfo "Starting To deploy Frontend Application ..."
+    - ENV=$1
+    - local MAF_DEPLOYMENT_ENV=${ENV^^}
+    - local CURR_APP_TOKEN=$MAF_APP_TOKEN
+    - local CURRENT_VERSION=$2
+    - local APP_NAME=$(getAppName)
+    - local CURRENT_APPLICATION_RUNNING_PIPELINE=`logInfo "$APP_NAME" | awk '{ print toupper($CURRENT_VERSION) }'`
+    - local REPO=$(getRepository)
+    - local CURR_LOCATION_TO_SAVE="${APP_NAME}.zip"
+
+    - downloadCurrentArtifactFromGitlab $REPO $APP_NAME $CURRENT_VERSION $CURR_LOCATION_TO_SAVE
+    - runDeployUtil $MAF_DEPLOYMENT_ENV $CURRENT_APPLICATION_RUNNING_PIPELINE $CURR_APP_TOKEN "assets" $CURR_LOCATION_TO_SAVE || exit 1
   rules:
     - if: '$ENV!="" && $APPLICATION_NAME!="" && $DEPLOY_TYPE=="assets" && $VERSION!=""'
