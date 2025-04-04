@@ -1,5 +1,4 @@
 import i18n from 'i18next'
-// const i18n = require('i18next')
 import { initReactI18next } from 'react-i18next'
 import en from '../public/locales/en/translation.json'
 
