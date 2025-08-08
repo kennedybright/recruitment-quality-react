@@ -5,7 +5,7 @@ module.exports = {
     token: '6b128c4d-0e93-40bd-8461-3fdf8cd0f9d2',
     entryPoint: '',
     frontendLayerVersion: 2,
-    reactVersion: 17,
+    reactVersion: 18,
   },
   initScripts: ['vendors', 'commons'],
   menus: [

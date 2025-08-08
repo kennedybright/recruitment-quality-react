@@ -1,4 +1,5 @@
 const Config = require('webpack-config').Config
+const path = require('path')
 
 module.exports = new Config().extend('conf/webpack.base.config.js').merge({
   module: {
@@ -16,9 +17,6 @@ module.exports = new Config().extend('conf/webpack.base.config.js').merge({
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
-    alias: {
-        "react/jsx-dev-runtime": "react/jsx-dev-runtime.js",
-        "react/jsx-runtime": "react/jsx-runtime.js"
-    }
+    // symlinks: false
   },
 })

@@ -6,5 +6,5 @@ module.exports = {
   //portSessionServiceDb: 38015,
   //portBrowserGw: 57897,
   frontendLayerVersion: 2,
-  reactVersion: 17,
+  reactVersion: 18,
 }

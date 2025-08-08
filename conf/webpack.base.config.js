@@ -53,7 +53,6 @@ module.exports = new Config().merge({
   },
   optimization: {
     splitChunks: {
-      //chunks: 'all',
       cacheGroups: {
         defaultVendors: {
           name: 'vendors',

@@ -1,1 +1,1 @@
-// module.exports = require('@nielsen-media/maf-frontend-eslint-config/.prettierrc')
+module.exports = require('@nielsen-media/maf-frontend-eslint-config/.prettierrc')

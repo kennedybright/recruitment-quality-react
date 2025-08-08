@@ -4,12 +4,12 @@ import Flex from '@nielsen-media/maf-fc-flex'
 import SingleSelect from '@nielsen-media/maf-fc-select'
 import ToggleButton from '@nielsen-media/maf-fc-toggle-button'
 
-export const ReportToggleButton = styled(ToggleButton as unknown as AnyStyledComponent)`
+export const ReportToggleButton = styled(ToggleButton  as unknown as AnyStyledComponent)`
   width: 100%;
   height: 100%;
 `
 
-export const FlexPDFLoading = styled(Flex as unknown as AnyStyledComponent)`
+export const FlexPDFLoading = styled(Flex)`
   width: 100%;
   height: 100%;
   background-color: ${aliasTokens.color.neutral200};
@@ -17,23 +17,23 @@ export const FlexPDFLoading = styled(Flex as unknown as AnyStyledComponent)`
   justify-content: center;
 `
 
-export const FlexText = styled(Flex as unknown as AnyStyledComponent)`
+export const FlexText = styled(Flex)`
   padding: ${aliasTokens.space400};
   width: 256px;
 `
 
-export const FlexReviewReport = styled(Flex as unknown as AnyStyledComponent)`
+export const FlexReviewReport = styled(Flex)`
   padding: 35px;
 `
 
-export const FlexViewer = styled(Flex as unknown as AnyStyledComponent)`
+export const FlexViewer = styled(Flex)`
   width: 100%;
   height: 720px;
   align-items: center;
   justify-content: center;
 `
 
-export const FlexMessageStatus = styled(Flex as unknown as AnyStyledComponent)`
+export const FlexMessageStatus = styled(Flex)`
   min-width: 500px;
   min-height: 256px;
   align-items: center;
@@ -41,12 +41,12 @@ export const FlexMessageStatus = styled(Flex as unknown as AnyStyledComponent)`
   justify-content: center;
 `
 
-export const FlexButton = styled(Flex as unknown as AnyStyledComponent)`
+export const FlexButton = styled(Flex)`
   width: 256px;
   height: 170px;
 `
 
-export const StyledFilterDropdown = styled(SingleSelect as unknown as AnyStyledComponent)`
+export const StyledFilterDropdown = styled(SingleSelect)`
   flex: auto;
   align-items: center;
   width: 250px;
