@@ -4,7 +4,7 @@ import { useDataContext } from '../../../lib/context/data.context'
 import Flex from '@nielsen-media/maf-fc-flex'
 import { updateEditedForms, deleteForms, submitFormEdits } from '../../../lib/maf-api/services/qa.service'
 import { Apps, FormError } from '../../../lib/types/forms.types'
-import { sleep } from '../../../lib/utils/helpers'
+import { formatTableValue, sleep } from '../../../lib/utils/helpers'
 import { Loading } from '../../../lib/components/feedback/LoaderSpinner'
 import { EditMode, FormChange, QAAuditTransaction } from '../../../lib/types/edit.types'
 import axios from 'axios'
@@ -121,8 +121,8 @@ export const EditProvider: FC = ({ children }) => {
                             form_id: form.record_number,
                             field_id: formFields[appID].find(field => field.label === name)?.id,
                             field_name: name,
-                            old_value: originalValue,
-                            new_value: updatedNewValue
+                            old_value: formatTableValue(originalValue),
+                            new_value: formatTableValue(updatedNewValue)
                         }
                     ]
                 })
@@ -176,8 +176,8 @@ export const EditProvider: FC = ({ children }) => {
                                     form_id: formID,
                                     field_id: formFields[appID].find(field => field.label === name)?.id,
                                     field_name: name,
-                                    old_value: originalValue,
-                                    new_value: updatedNewValue
+                                    old_value: formatTableValue(originalValue),
+                                    new_value: formatTableValue(updatedNewValue)
                                 }
                             ]
                         })

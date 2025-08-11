@@ -9,19 +9,19 @@ import { aliasTokens, JSONObject } from '@nielsen-media/maf-fc-foundation'
 import { AdjustmentBarContextStates, FilterItem, FilterOperator } from '@nielsen-media/maf-fc-adjustment-bar'
 import { RangeDatePicker } from '@nielsen-media/maf-fc-date-picker'
 import { PartialPickerDate, OnChangeHandler } from '@nielsen-media/maf-fc-date-picker/dist/types/src/types'
-import QAFormSingleView from '../../components/form/SingleFormViewAudio'
 import { InformationOutlineIcon, SelectionsIcon } from '@nielsen-media/maf-fc-icons'
 import AdjustCSS from '../../../../lib/utils/adjustCSS'
 import ActionIcon from '@nielsen-media/maf-fc-action-icon'
 import { useDataContext } from '../../../../lib/context/data.context'
 import { InlineSpinner } from '@nielsen-media/maf-fc-spinner'
-// import { fetchACMData } from '../../../../lib/maf-api/services/report.service'
 import { DownloadCsvButton } from '../../../../lib/components/buttons/DownloadButton'
 import { useMakeTable } from '../../../../lib/utils/custom-hooks/table.hooks'
 import { FETCHSTATUS, isEmpty } from '../../../../lib/utils/helpers'
 import { matchesDateRange, matchesFilters } from '../../../../lib/utils/reports/validateReport'
 import { useACM } from '../../../../lib/maf-api/hooks/report.hooks'
 import { EmptyQAFormState } from '../../../../lib/components/feedback/EmptyQALoadState'
+import { formatPickerAsDate } from '../../../../lib/utils/formatDateTime'
+import AudioSMPQAForm from '../../../../modules/qaforms/screens/audio-smp/components/FormAudioSMP'
 
 interface ACMTableProps<T> extends Partial<Table2Props<T>> {
     reportData: T[]
@@ -85,13 +85,12 @@ const ACMTable = <T,>({reportData, ...props}: ACMTableProps<T>) => {
                 // return default uneditable column props 
                 return { id: key, props: defaultColProps }
             })
-            : undefined
+            : []
 
     // ------------------------------------------------------------------------------- //
     
     // Generate the table data and columns
     const { data, columns } = useMakeTable({ initData: reportData, extensions: extensions, columnProps: columnPropsList })
-    // const [tableData, setTableData] = useState<TableData[]>(data) // rendered table data with final filtered results
     const [tableColumns, setTableColumns] = useState<ColumnDef<TableData>[]>(columns) // rendered table columns
 
     // ------------------------------------------------------------------------------- //
@@ -101,40 +100,18 @@ const ACMTable = <T,>({reportData, ...props}: ACMTableProps<T>) => {
     const [filterBarData, setFilterBarData] = useState<typeof data>(undefined) // filtered data from the Adjustment Bar
 
     // useStates for the Date Range Picker
-    const [dates, setDates] = useState<[PartialPickerDate, PartialPickerDate]>([new Date().setMonth(new Date().getMonth() - 6), new Date()]) // set initial dates: last 6 Months
-    const [datePickerData, setDatePickerData] = useState<typeof data>([]) // filtered data from the Date Range Picker
-
-    // const matchesDateRange = <T,>(item: T, dates: [PartialPickerDate, PartialPickerDate]): boolean => {
-    //   if (!dates) return true 
-    //   const dateRange = [new Date(dates[0]), new Date(dates[1])]
-    //   return (
-    //     new Date(item["record_date"]) > dateRange[0] 
-    //     && new Date(item["record_date"]) < dateRange[1]
-    //   )
-    // }
+    const [dates, setDates] = useState<[PartialPickerDate, PartialPickerDate]>([undefined, undefined]) 
 
     const handleDateRangeChange: OnChangeHandler = (({ value }: { value: [PartialPickerDate, PartialPickerDate]}) => {
         setDates(value)
     })
 
-    const handleDateRangeReset = () => { setDates(undefined) }
-
-    // const matchesFilters = <T,>(item: T, filters: FilterItem[], operator: FilterOperator): boolean => {
-    //   const filterCheck = ({ fieldId, value }: FilterItem) => {
-    //     const fieldValue = `${item[fieldId as keyof T] ?? ''}`.toLowerCase()
-    //     return fieldValue.includes(value.toLowerCase())
-    //   }
-
-    //   if (!filters) return true
-    //   return operator === FilterOperator.OR
-    //     ? filters.some(filterCheck)
-    //     : filters.every(filterCheck)
-    // }
+    const handleDateRangeReset = () => { setDates([undefined, undefined]) }
 
     const handleAdjustmentBarChange: (state?: AdjustmentBarContextStates) => void = state => {
         const { filters, operator } = state?.filtersState || {}
         const enabledFilters = filters.filter(f => f["value"] !== "") // filter out empty search filters
-        if (enabledFilters.filter(Boolean).length === 0) return setFilterBarData(undefined)
+        if (isEmpty(enabledFilters.filter(Boolean))) return setFilterBarData(undefined)
 
         const filteredTableData = data.filter(item => { matchesFilters(item, enabledFilters as FilterItem[], operator as FilterOperator) })
         setFilterBarData(filteredTableData)
@@ -149,25 +126,11 @@ const ACMTable = <T,>({reportData, ...props}: ACMTableProps<T>) => {
     }
 
     // Calculate the final table data results between the Date Range Picker & Adjustment Bar
-    // useEffect(() => {
-    //   if (datePickerData.length) {
-    //     setTableData(
-    //       datePickerData.filter((item) => 
-    //         filterBarData.some((filteredItem) => filteredItem.id === item.id)
-    //       )
-    //     )
-    //   } else if (!filterBarData.length) {
-    //     setTableData([])
-    //   } else if (filterBarData.length) {
-    //     setTableData(filterBarData)
-    //   }
-    // }, [datePickerData, filterBarData])
     const tableData = useMemo(() => {
         // filtered date data
-        let filteredData = data.filter((item) => { return matchesDateRange(item, dates) })
+        let filteredData = dates[0] && dates[1] ? data.filter((item) => { return matchesDateRange(item, dates) }) : data
 
-        if (filterBarData?.length === 0) filteredData = []
-        else if (filterBarData?.length) filteredData = filteredData.filter((item) => 
+       if (filterBarData) filteredData = isEmpty(filterBarData) ? [] : filteredData.filter((item) => 
             filterBarData.some((filteredItem) => filteredItem.id === item.id)
         )
         
@@ -183,7 +146,7 @@ const ACMTable = <T,>({reportData, ...props}: ACMTableProps<T>) => {
                 <RangeDatePicker.Input
                     className='acm-date-range'
                     size="compact"
-                    minDate={new Date().setMonth(new Date().getMonth() - 6, 1)}
+                    minDate={new Date().setMonth(new Date().getMonth() - 6, 1)} // last 6 months
                     view={RangeDatePicker.View.double}
                     dateFormat="dd MMM yyyy"
                     data-selector='record_date'
@@ -210,7 +173,7 @@ const ACMTable = <T,>({reportData, ...props}: ACMTableProps<T>) => {
                     description: 'There are no records to display. Try adjusting your filters or check back later.'
                 }}
                 expanding={{
-                    renderSubComponent: ({ row }) => <QAFormSingleView form={row.original} />
+                    renderSubComponent: ({ row }) => <AudioSMPQAForm mode='readonly' formID={row.original.record_number} readonlyData={row.original} />
                 }}
             >
                 <Table2.Header className='acm-table-header'>
@@ -233,10 +196,14 @@ const ACMTable = <T,>({reportData, ...props}: ACMTableProps<T>) => {
                             }))}
                             filterOpened={filterValue}
                             onChange={handleAdjustmentBarChange}
+                            onReset={() => setFilterBarData(undefined)}
                         />
                         <DownloadCsvButton 
                             classPfx="acm"
-                            filename={`ACM - ${new Date(dates[0]).toISOString().split('T')[0]}_to_${new Date(dates[1]).toISOString().split('T')[0]}.csv`}
+                            filename={dates[0] && dates[1]
+                                ? `ACM - ${new Date(dates[0]).toISOString().split('T')[0]}_to_${new Date(dates[1]).toISOString().split('T')[0]}.csv`
+                                : `acm_report.csv` // dummy filename for undefined dates
+                            }
                             data={tableData}
                         />
                     </FlexTableHeader>
@@ -251,8 +218,7 @@ export const ACMReport: FC = () => {
 
     const [status, setStatus] = useState<FETCHSTATUS>('loading')
 
-    const { data: acmData, isLoading, isError, isSuccess } = useACM()
-    console.log("acm", status, acmData)
+    const { data: acmData, isLoading, isError, isSuccess } = useACM({afterDate: formatPickerAsDate(new Date().setMonth(new Date().getMonth() - 6))}) // last 6 Months only
 
     useEffect(() => { // check if all static & report data has been loaded
         if (!formFields) {
@@ -277,8 +243,8 @@ export const ACMReport: FC = () => {
         }
 
         if (isSuccess) {
-            if (!isEmpty(acmData)) setStatus('success')
-            else setStatus('no-data')
+            setStatus('success')
+            return
         }
     }, [formFields, acmData, isLoading, isError, isSuccess])
 
@@ -313,9 +279,8 @@ export const ACMReport: FC = () => {
                     "
                 />
             </Flex>
-            <InlineSpinner loading={isLoading} isFillParent>
+            <InlineSpinner loading={status === 'loading'} isFillParent>
                 {status === 'error' && <EmptyQAFormState size='regular' title="Error Occured" error description="An error occured when fetching the data." />}
-                {status === 'no-data' && <EmptyQAFormState size='regular' title="No Data Loaded" description="No monitoring forms match the current criteria. Please try again." />}
                 {status === 'success' && <ACMTable className='acm-report' reportData={acmData} />}
             </InlineSpinner>
         </FlexView>

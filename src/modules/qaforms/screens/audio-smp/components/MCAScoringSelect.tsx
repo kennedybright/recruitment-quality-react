@@ -1,8 +1,8 @@
 import { FC } from "react"
-import { FormMode, FormRef } from "../../../../../lib/types/forms.types"
+import { FormRef } from "../../../../../lib/types/forms.types"
 import { HookForm } from "@nielsen-media/maf-fc-foundation"
 import { FieldValues } from "react-hook-form"
-import { FormAttributeInput, FormScoringSelect } from '../../../../qaforms/components'
+import { FormScoringSelect } from '../../../../qaforms/components'
 import { useFormContext } from "../../../base/form.context"
 import { useEditContext } from "../../../../edit-forms/base/edit.context"
 import { useDataContext } from "../../../../../lib/context/data.context"
@@ -18,12 +18,11 @@ export const MCAScoringSelect: FC<AudioSMPAttributeProps> = ({
     const { dropdowns } = useDataContext()
 
     if (mode === 'readonly') return (
-        <FormAttributeInput
+        <FormScoringSelect
             mode={mode}
             label='mca_category' 
             title="MCA Category" 
             readonlyData={readonlyData}
-            size='regular'
         />
     )
 

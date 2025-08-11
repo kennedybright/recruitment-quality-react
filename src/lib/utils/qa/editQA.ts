@@ -29,8 +29,8 @@ export function buildEditsSubmission(
                 audit_track: auditTracking,
                 field_id: change.field_id,
                 field_name: change.field_name,
-                old_value: change.old_value,
-                new_value: change.new_value,
+                old_value: change.old_value === "NULL" ? null : change.old_value,
+                new_value: change.new_value === "NULL" ? null : change.new_value,
                 created_by: `${qr}`,
                 transaction_date: formatTimestamp(new Date(), 'America/Chicago') // CST timezone
             }
@@ -56,8 +56,8 @@ export function buildAIEditsSubmission(
                 audit_track: auditTracking,
                 field_id: change.field_id,
                 field_name: change.field_name,
-                old_value: change.old_value,
-                new_value: change.new_value,
+                old_value: change.old_value === "NULL" ? null : change.old_value,
+                new_value: change.new_value === "NULL" ? null : change.new_value,
                 created_by: `${qr}`,
                 transaction_date: formatTimestamp(new Date(), 'America/Chicago') // CST timezone
             }

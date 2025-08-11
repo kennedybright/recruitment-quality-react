@@ -27,7 +27,7 @@ export function formatTableValue(value: any): string {
     switch(typeof value) {
         case 'boolean': return `${value}`
         case 'number' : return String(value)
-        case 'object' : return value ? JSON.stringify(value) : "NULL"
+        case 'object' : return value ? JSON.stringify(value) : null
         case 'string' : return value
     }
 }

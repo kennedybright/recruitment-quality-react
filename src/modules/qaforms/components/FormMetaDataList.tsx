@@ -59,8 +59,8 @@ export const CurrentFormMetaData: FC<CurrentFormMetaDataProps> = ({ mode, aiEnab
                 return {
                     recordDate: formattedDate,
                     recordTime: formattedTime,
-                    qrID: readonlyData.qrID,
-                    siteName: readonlyData.siteName
+                    qrID: readonlyData.qr_id,
+                    siteName: readonlyData.site_name_id
                 }
             }
         }
@@ -72,7 +72,8 @@ export const CurrentFormMetaData: FC<CurrentFormMetaDataProps> = ({ mode, aiEnab
             <List.Item className='record-date' data-selector='record_date' body={metaDataRef.recordDate} heading={"Record Date"} />
             <List.Item className='record-time' data-selector='record_time' body={metaDataRef.recordTime} heading={"Record Time"} />
             <List.Item className='qr-id' data-selector='qr_id' body={metaDataRef.qrID} heading={"QR ID"} icon={UserCircleFillIcon} />
-            {['new', 'ai'].includes(mode) && <List.Item className='site-name' body={metaDataRef.siteName} heading={"Site Name"} icon={PhoneFillIcon} />}
+            <List.Item className='site-name' body={metaDataRef.siteName} heading={"Site Name"} icon={PhoneFillIcon} />
+            {/* {['new', 'ai'].includes(mode) && <List.Item className='site-name' body={metaDataRef.siteName} heading={"Site Name"} icon={PhoneFillIcon} />} */}
         </List>
     )
 }

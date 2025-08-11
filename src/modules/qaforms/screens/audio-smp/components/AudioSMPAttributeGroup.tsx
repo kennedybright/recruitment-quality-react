@@ -24,6 +24,60 @@ export const AudioSMPAttributeGroup: FC<AudioSMPAttributeProps> = ({
  }) => {
     const { dropdowns } = useDataContext()
 
+    if (mode === 'readonly') return (
+        <Flex className='current form details__atttributes' flexDirection='row' gap={aliasTokens.space700} flexWrap='wrap'>
+            <FormAttributeSelect 
+                mode={mode}
+                readonlyData={readonlyData}
+                label='ri_id'
+                title='RI ID'
+                size='compact'                                                       
+            />
+            <FormAttributeSelect 
+                mode={mode}
+                readonlyData={readonlyData}
+                label='ri_shift'
+                title='RI Shift'
+                size='compact'                                                       
+            />
+            <FormAttributeSelect 
+                mode={mode}
+                readonlyData={readonlyData}
+                label='site_name_id'
+                title='RI Site Name'
+                size='compact'                                                          
+            />
+            <FormAttributeInput
+                mode={mode}
+                readonlyData={readonlyData}
+                label='sample_id'
+                title='Sample ID'
+                size='compact'                                                         
+            />
+            <FormAttributeSelect 
+                mode={mode}
+                readonlyData={readonlyData}
+                label='call_type_id'
+                title='Call Type'
+                size='compact'                                                            
+            />
+            <FormAttributeSelect 
+                mode={mode}
+                readonlyData={readonlyData}
+                label='frame_code_id'
+                title='Frame Code'
+                size='compact'                                                           
+            />
+            <FormAttributeSelect 
+                mode={mode}
+                readonlyData={readonlyData}
+                label='call_direction'
+                title='Call Direcition'
+                size='compact'                                                           
+            />
+        </Flex>
+    )
+
     const ref = () => {
         switch(mode) {
             case 'new': {
@@ -117,7 +171,6 @@ export const AudioSMPAttributeGroup: FC<AudioSMPAttributeProps> = ({
                 label='call_type_id'
                 title='Call Type'
                 size='compact'
-                layout="vertical" 
                 items={dropdowns.call_type_id}
                 selectedValue={formRef.call_type_id} 
                 onChange={(value) => { onFieldChange("call_type_id", value) }}                                                                 
@@ -128,7 +181,6 @@ export const AudioSMPAttributeGroup: FC<AudioSMPAttributeProps> = ({
                 label='frame_code_id'
                 title='Frame Code'
                 size='compact'
-                layout="vertical" 
                 items={dropdowns.frame_code_id} 
                 selectedValue={formRef.frame_code_id}    
                 onChange={(value) => { onFieldChange("frame_code_id", value) }}                                                             
@@ -139,7 +191,6 @@ export const AudioSMPAttributeGroup: FC<AudioSMPAttributeProps> = ({
                 label='call_direction'
                 title='Call Direcition'
                 size='compact'
-                layout="vertical" 
                 items={dropdowns.call_direction} 
                 selectedValue={formRef.call_direction}
                 onChange={(value) => { onFieldChange("call_direction", value) }}                                                                 

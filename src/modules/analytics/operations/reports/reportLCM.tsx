@@ -1,6 +1,6 @@
 // Formatting for the Last Call Monitored Report
 
-import { FC, useEffect, useMemo, useState } from 'react'
+import { FC, useMemo, useState } from 'react'
 import Text from '@nielsen-media/maf-fc-text'
 import Flex from '@nielsen-media/maf-fc-flex'
 import Table2, { ColumnDef, NumberCellProps, Table2Props, TableData, TextCellProps } from '@nielsen-media/maf-fc-table2'
@@ -12,12 +12,11 @@ import { InformationOutlineIcon, SelectionsIcon } from '@nielsen-media/maf-fc-ic
 import AdjustCSS from '../../../../lib/utils/adjustCSS'
 import ActionIcon from '@nielsen-media/maf-fc-action-icon'
 import { InlineSpinner } from '@nielsen-media/maf-fc-spinner'
-import { fetchLCMData } from '../../../../lib/maf-api/services/report.service'
 import { DownloadCsvButton } from '../../../../lib/components/buttons/DownloadButton'
 import { ReportLCM } from '../../../../lib/types/reports.types'
 import { matchesFilters } from '../../../../lib/utils/reports/validateReport'
 import { useLCM } from '../../../../lib/maf-api/hooks/report.hooks'
-import { FETCHSTATUS, isEmpty } from '../../../../lib/utils/helpers'
+import { isEmpty } from '../../../../lib/utils/helpers'
 import { EmptyQAFormState } from '../../../../lib/components/feedback/EmptyQALoadState'
 
 interface LCMTableProps extends Partial<Table2Props<ReportLCM>> {
@@ -51,35 +50,23 @@ const LCMTable: FC<LCMTableProps> = ({reportData, ...props}) => {
                 // return default uneditable column props 
                 return { id: key, props: defaultColProps }
             })
-            : undefined
+            : []
 
     // ------------------------------------------------------------------------------- //
 
     // Generate the table data and columns
     const { data, columns } = useMakeTable({ initData: reportData, extensions: extensions, columnProps: columnPropsList })
-    const [tableColumns, setTableColumns] = useState<ColumnDef<TableData>[]>(columns) // rendered table columns
     
     // ------------------------------------------------------------------------------- //
     
     // useStates for the Adjustment Bar
     const [filterValue, setFilterValue] = useState({opened: false, filterColumnId: ''}) // filter bar state
     const [filterBarData, setFilterBarData] = useState<TableData[]>(undefined) // filtered data from the Adjustment Bar
-    
-    // const matchesFilters = (item: ReportLCM, filters: FilterItem[], operator: FilterOperator): boolean => {
-    //     const filterCheck = ({ fieldId, value }: FilterItem) => {
-    //     const fieldValue = `${item[fieldId as keyof ReportLCM] ?? ''}`.toLowerCase()
-    //     return fieldValue.includes(value.toLowerCase())
-    //     }
-
-    //     if (!filters) return true
-    //     return operator === FilterOperator.OR
-    //     ? filters.some(filterCheck)
-    //     : filters.every(filterCheck)
-    // }
 
     const handleAdjustmentBarChange: (state?: AdjustmentBarContextStates) => void = state => {
         const { filters, operator } = state?.filtersState || {}
         const enabledFilters = filters.filter(f => f["value"] !== "") // filter out empty search filters
+        if (isEmpty(enabledFilters.filter(Boolean))) return setFilterBarData(undefined)
 
         const filteredTableData = data.filter(item => { matchesFilters<ReportLCM>(item, enabledFilters as FilterItem[], operator as FilterOperator) })
         setFilterBarData(filteredTableData)
@@ -88,8 +75,7 @@ const LCMTable: FC<LCMTableProps> = ({reportData, ...props}) => {
     // Calculate the final table data results
     const tableData = useMemo(() => {
         let filteredData = data
-        if (filterBarData?.length === 0) filteredData = []
-        else if (filterBarData?.length) filteredData = filterBarData
+        if (filterBarData) filteredData = isEmpty(filterBarData) ? [] : filterBarData
 
         return filteredData
     }, [data, filterBarData])
@@ -99,9 +85,9 @@ const LCMTable: FC<LCMTableProps> = ({reportData, ...props}) => {
             <Table2
                 className='lcm-full-table'
                 {...props}
-                columns={tableColumns}
+                columns={columns} //{tableColumns}
                 data={tableData}
-                pagination={{currentPage: 0, pageSize: 10}}
+                pagination={{currentPage: 0, pageSize: 15}}
                 striped
                 size='compact'
                 placeholderProps={{
@@ -125,10 +111,11 @@ const LCMTable: FC<LCMTableProps> = ({reportData, ...props}) => {
                             }))}
                             filterOpened={filterValue}
                             onChange={handleAdjustmentBarChange}
+                            onReset={() => setFilterBarData(undefined)}
                         />
                         <DownloadCsvButton 
-                            classPfx="acm"
-                            filename={`LCM Report.csv`}
+                            classPfx="lcm"
+                            filename={`lcm_report.csv`}
                             data={tableData}
                         />
                     </FlexTableHeader>
@@ -140,7 +127,6 @@ const LCMTable: FC<LCMTableProps> = ({reportData, ...props}) => {
 
 export const LCMReport: FC = () => {
     const { data: lcmData, isLoading, isError, isSuccess } = useLCM()
-    console.log("lcm", lcmData)
 
     return (
         <FlexView className='last-call-monitored' column gap={aliasTokens.space350}>
@@ -169,8 +155,7 @@ export const LCMReport: FC = () => {
             </Flex>
             <InlineSpinner loading={isLoading} isFillParent>
                 {isError && <EmptyQAFormState size='regular' title="Error Occured" error description="An error occured when fetching the data." />}
-                {(isSuccess && isEmpty(lcmData)) && <EmptyQAFormState size='regular' title="No Data Loaded" description="No monitoring forms match the current criteria. Please try again." />}
-                {(isSuccess && !isEmpty(lcmData)) && <LCMTable className='lcm-report' reportData={lcmData} />}
+                {isSuccess && <LCMTable className='lcm-report' reportData={lcmData} />}
             </InlineSpinner>
         </FlexView>
     )

@@ -1,14 +1,13 @@
 import { FC, useEffect, useState } from "react"
-import { FieldLogic, FormError, FormMode, FormRef } from "../../../../../lib/types/forms.types"
+import { FieldLogic, FormError, FormRef } from "../../../../../lib/types/forms.types"
 import { aliasTokens, HookForm } from "@nielsen-media/maf-fc-foundation"
 import { FieldValues } from "react-hook-form"
 import { useFormContext } from "../../../base/form.context"
 import { useEditContext } from "../../../../edit-forms/base/edit.context"
 import { useDataContext } from "../../../../../lib/context/data.context"
 import Grid from "@nielsen-media/maf-fc-grid"
-import { FormAttributeInput, FormScoringSelect } from '../../../../qaforms/components'
+import { FormScoringSelect } from '../../../../qaforms/components'
 import { getFieldsbyType } from "../../../../../lib/utils/qa/buildQA"
-import { TableData } from "@nielsen-media/maf-fc-table2"
 import Flex from "@nielsen-media/maf-fc-flex"
 import Banner from '@nielsen-media/maf-fc-banner'
 import { FlexScoringBannerGroup } from "../../../styles"
@@ -37,12 +36,11 @@ export const AudioSMPScoringGroup: FC<AudioSMPScoringProps> = ({
             gridTemplateColumns="1fr 1fr 1fr 1fr"
         >
             {Object.values(scoringDropdowns).map(f => { // scoring dropdown fields
-                return <FormAttributeInput
+                return <FormScoringSelect
                     mode={mode}
                     label={f.label}
                     title={f.name}
                     readonlyData={readonlyData}
-                    size="regular"
                 />
             })}
         </Grid>

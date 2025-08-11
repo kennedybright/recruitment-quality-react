@@ -23,7 +23,7 @@ import Chip from '@nielsen-media/maf-fc-info-chip'
 import { DEVIATIONCATEGORY } from './constants'
 import reportKeys from '../../../lib/maf-api/query-keys/report.keys'
 import { useQuery } from 'react-query'
-import { buildAIEditsSubmission } from 'src/lib/utils/qa/editQA'
+import { buildAIEditsSubmission } from '../../../lib/utils/qa/editQA'
 
 export interface FormAIContextProps extends Omit<FormContextProps, 'createNewForm' | 'deleteCurrentForm' | 'setDefaultField' | 'onSubmit'> {
 	dateSetting: 'single' | 'range'
@@ -388,24 +388,18 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
 						await submitTransactions(finalFilteredChanges).then((successfulAudits) => {
 							if (successfulAudits.length === finalFilteredChanges.length) {
 								console.log("All edit transactions have been successfully submitted.")
+								setQaForms(prevQaForms => ({...prevQaForms, formChanges: []}))
 								setIsSuccessful(true)
 							} else {
 								const totalFailedAudits = finalFilteredChanges?.filter((change, ndx) => !successfulAudits.includes(ndx))
 								console.log("Some edit transactions have failed:", totalFailedAudits)
+								setQaForms(prevQaForms => ({...prevQaForms, formChanges: totalFailedAudits}))
 								setIsSuccessful(false)
 							}
 							
 							setIsSaving(false) // end saving session
+							queryClient.invalidateQueries({ queryKey: reportKeys.aiForms(1001, queryParams) }) // invalidate current query to refetch data
 						})
-
-						// run new query to update the form
-						// setQueryParams(dateSetting === 'single' 
-						// 	? { date: format(recordDate, 'yyyy-MM-dd'), riID: riID }
-						// 	: { beforeDate: format(recordDateRange[1], 'yyyy-MM-dd'), afterDate: format(recordDateRange[0], 'yyyy-MM-dd'), riID: riID }
-						// )
-
-						queryClient.invalidateQueries({ queryKey: reportKeys.aiForms(1001, queryParams) }) // invalidate current query to refetch data
-						// window.location.reload() // refresh the page
 					}
 				}
 			}
@@ -466,9 +460,11 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
 						await submitTransactions(finalFilteredChanges).then((successfulAudits) => {
 							if (successfulAudits.length === finalFilteredChanges.length) {
 								console.log("All updates have been successful. Submitting all edit transactions...")
+								setQaForms(prevQaForms => ({...prevQaForms, formChanges: []}))
 							} else {
 								const totalFailedAudits = finalFilteredChanges?.filter((change, ndx) => !successfulAudits.includes(ndx))
 								console.log("Some updates have failed:", totalFailedAudits)
+								setQaForms(prevQaForms => ({...prevQaForms, formChanges: totalFailedAudits}))
 							}
 						})
 					}

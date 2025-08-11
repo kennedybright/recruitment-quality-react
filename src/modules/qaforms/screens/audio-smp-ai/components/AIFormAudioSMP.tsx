@@ -26,38 +26,6 @@ const AIAudioSMPQAForm: FC<AudioSMPFormProps> = ({ mode, formID, readonlyData })
         }
     }
     const formState = dataStatus()
-
-    // if (formState === 'idle') return (
-    //     <FlexWrapper400800 column gap={aliasTokens.space450} className='qa-monitoring-form' id='ai-audio-smp-form'>
-    //         {mode === 'ai' && <AIFormFiltersGroup />}
-
-    //         <EmptyQAFormState title="Enter Filters to Load Forms" description="No monitoring forms have been displayed yet. In order to begin monitoring, simply run a query using parameters above." />
-    //     </FlexWrapper400800>
-    // )
-
-    //  if (formState === 'loading') return (
-    //     <FlexWrapper400800 column gap={aliasTokens.space450} className='qa-monitoring-form' id='ai-audio-smp-form'>
-    //         {mode === 'ai' && <AIFormFiltersGroup />}
-            
-    //         <Spinner className='ai-data-query-loading' loading />
-    //     </FlexWrapper400800>
-    // )
-
-    // if (formState === 'error') return (
-    //     <FlexWrapper400800 column gap={aliasTokens.space450} className='qa-monitoring-form' id='ai-audio-smp-form'>
-    //         {mode === 'ai' && <AIFormFiltersGroup />}
-            
-    //         <EmptyQAFormState title="Error Occured" error description="An error occured when fetching the data. Please try again." />
-    //     </FlexWrapper400800>
-    // )
-
-    // if (formState === 'no-data') return (
-    //     <FlexWrapper400800 column gap={aliasTokens.space450} className='qa-monitoring-form' id='ai-audio-smp-form'>
-    //         {mode === 'ai' && <AIFormFiltersGroup />}
-            
-    //         <EmptyQAFormState title="No Forms Loaded" description="No monitoring forms match the current criteria. Please try again." />
-    //     </FlexWrapper400800>
-    // )
     
     return (
         <FlexWrapper400800 column gap={aliasTokens.space450} className='qa-monitoring-form' id='ai-audio-smp-form'>

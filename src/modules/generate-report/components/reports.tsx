@@ -37,7 +37,6 @@ const ReportContext = createContext<ReportContextProps>(null)
 
 // Main Report Context Provider for each step (Choose Report, Review Report, Send Report)
 export const ReportProvider: FC = ({ children }) => {
-    const { actions: { navigate } } = useMAFContext()
     const [dataLoaded, setDataLoaded] = useState(false)
     const { currentUser, dropdowns } = useDataContext() // Get RI dropdown list
     

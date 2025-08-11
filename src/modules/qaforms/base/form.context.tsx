@@ -141,10 +141,6 @@ export const QAFormProvider: FC<FormProviderProps> = ({ children, userData, appI
 		}))
 	}
 
-	useEffect(() => {console.log("defaultFields", defaultFields)}, [defaultFields])
-	useEffect(() => {console.log("activeFormRef", getActiveForm().formRef)}, [getActiveForm().formRef])
-	useEffect(() => {console.log("formFields", getActiveForm().fields)}, [getActiveForm().fields])
-
 	// Create new form and set it to Active and the previous form to Inactive
 	const createNewForm = () => {
 		let newFormID: number

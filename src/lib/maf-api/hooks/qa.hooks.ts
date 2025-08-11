@@ -1,12 +1,19 @@
-import { useQueries, useQuery, UseQueryResult } from "react-query"
+import { useMutation, useQueries, useQuery, UseQueryResult } from "react-query"
 import qaKeys from "../query-keys/qa.keys"
 import { fetchFormFields, fetchAllRI, fetchAuditTracking, fetchCalltypeSkipLogic, 
     fetchCalltypes, fetchFramecodes, fetchMcaCategories, fetchSitenames, 
-    fetchApps } from "../services/qa.service"
+    fetchApps, 
+    submitAIFormEdits} from "../services/qa.service"
 import { FormField, FieldLogic, Apps, FieldCatg, RI } from "../../../lib/types/forms.types"
 import { AxiosError } from "axios"
 import { formatFields } from "../../../lib/utils/qa/buildQA"
 import { getAlphaNumType } from "../../../lib/utils/helpers"
+import { ReportAPIParams } from "../services/report.service"
+import { queryClient } from "src/maf-api"
+import reportKeys from "../query-keys/report.keys"
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+// GET Hooks: 
 
 export const useApps = () => {
     return useQuery<Apps, AxiosError>({
@@ -112,3 +119,22 @@ export const useSkipLogicAudio = () => {
         cacheTime: 1000 * 60 * 120, // 2 hours
     })
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+// POST Hooks: 
+
+// export const useMakeFormUpdates = (appID: number, queryParams: ReportAPIParams) => {
+//   return useMutation(submitAIFormEdits, {
+//     onSuccess: (data) => {
+//       console.log("Submission successful, invalidating queries...")
+      
+//     },
+//     onError: (error) => {
+//       console.error("Error submitting changes:", error)
+//     },
+//     onSettled: () => {
+//       console.log("Mutation has settled (either success or error).")
+//       queryClient.invalidateQueries({ queryKey: reportKeys.aiForms(appID, queryParams) }) // invalidate current query to refetch data
+//     }
+//   })
+// }
