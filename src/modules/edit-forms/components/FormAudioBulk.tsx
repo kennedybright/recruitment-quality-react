@@ -94,7 +94,9 @@ const QAFormBulkEditableAudio = () => {
             cell: (params: EditableAsyncSelectCellProps) => (
                 <EditableSelectCell
                     {...params}
-                    getItems={() => dropdowns[name]}
+                    getItems={() => name === 'mca_category' 
+                        ? [{label: "\u2014", value: null}, ...dropdowns.mca_category]
+                        : dropdowns[name]}
                 />
             )
         } as unknown as Partial<ColumnDef<TableData>>

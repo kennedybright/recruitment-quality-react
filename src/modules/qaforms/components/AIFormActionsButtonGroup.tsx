@@ -99,7 +99,7 @@ export const AIFormActionsButtonGroup: FC<FormActionsGroupProps> = ({ hookform }
                         }
                     }}
                     statusChip={isSubmitting ? "IN PROGRESS" : isSuccessful === true ? "SUCCESS" : "FAILED"}
-                    title={isSubmitting ? "Submitting All Forms..." : isSuccessful === true ? 'Forms successfully submitted!' : 'Something Went Wrong.'}
+                    title={isSubmitting ? "Submitting Now..." : isSuccessful === true ? 'Successfully submitted!' : 'Something Went Wrong.'}
                     variant={isSubmitting ? dialog.variant.neutralTertiary : isSuccessful === true ? dialog.variant.success : dialog.variant.danger}
                     opened={toSubmit}
                     size='jumbo'

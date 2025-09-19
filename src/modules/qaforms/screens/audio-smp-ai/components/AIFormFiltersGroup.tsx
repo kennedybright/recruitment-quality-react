@@ -23,7 +23,6 @@ export const AIFormFiltersGroup: FC = () => {
     const defaultFilterData = [
         { title: 'Call Type', label: null },
         { title: 'Frame Code', label: null },
-        // { title: 'Total Score', label: null },
         { title: 'Deviation Category', label: null, chip: { label: '0', variant: Chip.Variant.neutral } },
         { title: 'Scoring Category', label: null, chip: { label: '0', variant: Chip.Variant.neutral } },
     ]
@@ -38,14 +37,12 @@ export const AIFormFiltersGroup: FC = () => {
     const [selectedFilters, setSelectedFilters] = useState<FiltersItems[]>(filterItems)
     const [calltypeValue, setCalltypeValue] = useState<string>('')
     const [framecodeValue, setFramecodeValue] = useState<string>('')
-    // const [totalScoreValue, setTotalScoreValue] = useState(isDefault ? [] : ['AL', 'AK'])
     const [deviationCatgValue, setDeviationCatgValue] = useState<string[]>([])
     const [scoringCatgValue, setScoringCatgValue] = useState<string[]>([])
 
     const handleReset = () => {
         setCalltypeValue('')
         setFramecodeValue('')
-        // setSelectedValue(isDefault ? [] : ['AL', 'AK'])
         setDeviationCatgValue([])
         setScoringCatgValue([])
         setSelectedFilters(defaultFilterData)
@@ -174,15 +171,6 @@ export const AIFormFiltersGroup: FC = () => {
                         setSelectedValue={setFramecodeValue}
                         setSelectedFilters={setSelectedFilters}
                     />
-                    {/* <TypeaHeadSearchInput
-                        items={totalScore}
-                        position={2}
-                        label='Movies'
-                        filterItems={filterItems}
-                        searchValue={moviesSearchValue}
-                        setSearchValue={setMoviesSearchValue}
-                        setSelectedFilters={setSelectedFilters}
-                    /> */}
                     <StickyFilterMultiSelect
                         label='Deviation Category'
                         position={2}

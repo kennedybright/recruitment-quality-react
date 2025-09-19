@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, FC, useMemo, useCallback } from 'react'
+import React, { createContext, useContext, useState, useEffect, FC, useMemo } from 'react'
 import { loadAIForms, saveAIForms, resetAIQA, fieldsToRef } from '../../../lib/utils/qa/buildQA'
 import { FormField, Form, FormRef, FormError, FormMetadata, QAFormsAI } from '../../../lib/types/forms.types'
 import { FieldValues, FormProvider, useForm, UseFormReturn, useController } from 'react-hook-form'
@@ -6,7 +6,7 @@ import { queryClient, useMAFContext } from '../../../maf-api'
 import Flex from '@nielsen-media/maf-fc-flex'
 import { useDataContext } from '../../../lib/context/data.context'
 import { FETCHSTATUS, formatTableValue, isEmpty, sleep } from '../../../lib/utils/helpers'
-import { formatDateTime, formatTimestamp } from '../../../lib/utils/formatDateTime'
+import { formatDateTime } from '../../../lib/utils/formatDateTime'
 import { validateForms } from '../../../lib/utils/qa/validateQA'
 import { buildFormsSubmission, buildFormSubmission } from '../../../lib/utils/qa/submitQA'
 import { Loading } from '../../../lib/components/feedback/LoaderSpinner'
@@ -17,7 +17,7 @@ import axios, { AxiosError } from 'axios'
 import { FormContextProps, FormProviderProps } from './form.context'
 import { PartialPickerDate } from '@nielsen-media/maf-fc-date-picker'
 import { fetchAIForms, ReportAPIParams } from '../../../lib/maf-api/services/report.service'
-import { FormChange, QAAuditTransaction } from '../../../lib/types/edit.types'
+import { FormChange } from '../../../lib/types/edit.types'
 import { FiltersItems } from '@nielsen-media/maf-fc-sticky-header-filters/dist/types/src/types'
 import Chip from '@nielsen-media/maf-fc-info-chip'
 import { DEVIATIONCATEGORY } from './constants'
@@ -77,7 +77,6 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
 	const defaultFilterData = [
         { title: 'Call Type', label: null },
         { title: 'Frame Code', label: null },
-        // { title: 'Total Score', label: null },
         { title: 'Deviation Category', label: null, chip: { label: '0', variant: Chip.Variant.neutral } },
         { title: 'Scoring Category', label: null, chip: { label: '0', variant: Chip.Variant.neutral } },
     ]
@@ -141,8 +140,8 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
 	}, [qaForms.forms])
 
 	const { isLoading, isError, isSuccess } = useQuery<any[], AxiosError>({
-		queryKey: reportKeys.aiForms(1001, queryParams),
-		queryFn: () => fetchAIForms(1001, queryParams),
+		queryKey: reportKeys.aiForms(appID, queryParams),
+		queryFn: () => fetchAIForms(appID, queryParams),
 		refetchOnWindowFocus: false,
 		refetchOnReconnect: false,
 		enabled: !!queryParams,
@@ -392,16 +391,16 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
 								setIsSuccessful(true)
 							} else {
 								const totalFailedAudits = finalFilteredChanges?.filter((change, ndx) => !successfulAudits.includes(ndx))
-								console.log("Some edit transactions have failed:", totalFailedAudits)
+								console.warn("Some edit transactions have failed:", totalFailedAudits)
 								setQaForms(prevQaForms => ({...prevQaForms, formChanges: totalFailedAudits}))
 								setIsSuccessful(false)
 							}
-							
-							setIsSaving(false) // end saving session
-							queryClient.invalidateQueries({ queryKey: reportKeys.aiForms(1001, queryParams) }) // invalidate current query to refetch data
 						})
 					}
 				}
+
+				setIsSaving(false) // end saving session
+				queryClient.invalidateQueries({ queryKey: reportKeys.aiForms(appID, queryParams) }) // invalidate current query to refetch data
 			}
 		}
 	}
@@ -449,7 +448,6 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
                 }
 
 				console.log(`${totalSavedIDs.length} form(s) saved.`)
-            	return totalSavedIDs
             } catch (error) { 
 				onSubmitError(error, 'save AI form(s)') 
 			} finally {
@@ -459,16 +457,19 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
 					if (finalFilteredChanges) {
 						await submitTransactions(finalFilteredChanges).then((successfulAudits) => {
 							if (successfulAudits.length === finalFilteredChanges.length) {
-								console.log("All updates have been successful. Submitting all edit transactions...")
+								console.log("All edit transactions have been successfully submitted.")
 								setQaForms(prevQaForms => ({...prevQaForms, formChanges: []}))
 							} else {
 								const totalFailedAudits = finalFilteredChanges?.filter((change, ndx) => !successfulAudits.includes(ndx))
-								console.log("Some updates have failed:", totalFailedAudits)
+								console.warn("Some edit transactions have failed:", totalFailedAudits)
 								setQaForms(prevQaForms => ({...prevQaForms, formChanges: totalFailedAudits}))
 							}
 						})
 					}
 				}
+
+				setIsSaving(false) // end saving session
+				queryClient.invalidateQueries({ queryKey: reportKeys.aiForms(appID, queryParams) }) // invalidate current query to refetch data
 			}
 		}
 	}
