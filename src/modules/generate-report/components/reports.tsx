@@ -7,6 +7,7 @@ import { PartialPickerDate } from '@nielsen-media/maf-fc-date-picker'
 import { pdf } from '@react-pdf/renderer'
 import { useMAFContext } from '../../../maf-api'
 import { formatPickerAsDate } from '../../../lib/utils/formatDateTime'
+import { CCQA_MANAGER } from '../../../lib/env'
 
 interface ReportContextProps {
     qrID: string
@@ -111,7 +112,7 @@ export const ReportProvider: FC = ({ children }) => {
 
             let recipients = []
             if (riID[0] === "J") recipients.push('uscallcenteraudiogdlqualityreporting@nielsen.com') // add GDL distribution email to receipients list
-            recipients.push('uscallcenteraudioops@nielsen.com', 'joy.saldana@nielsen.com') // add current QA Team Lead email: Joy Saldana (01/27/2024)
+            recipients.push(CCQA_MANAGER.email, 'uscallcenteraudioops@nielsen.com')
 
             await emailReport(recipients, pdfBlob, reportName, filename, currentUser.qrID, riID)
             return 'success'

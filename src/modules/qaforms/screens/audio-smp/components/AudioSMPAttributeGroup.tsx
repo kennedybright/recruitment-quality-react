@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useEffect } from "react"
 import { FormMode, FormRef } from "../../../../../lib/types/forms.types"
 import { aliasTokens, HookForm } from "@nielsen-media/maf-fc-foundation"
 import { FieldValues } from "react-hook-form"
@@ -113,6 +113,12 @@ export const AudioSMPAttributeGroup: FC<AudioSMPAttributeProps> = ({
     const formRef: FormRef = ref().formRef
     const onFieldChange = ref().onFieldChange
 
+    useEffect(() => {
+        if (mode === 'ai' && dropdowns.ri_id.find(ri => ri.value === formRef.ri_id)) {
+            if (formRef.site_name_id === null) onFieldChange('site_name_id', dropdowns.ri_id.find(ri => ri.value === formRef.ri_id).siteNameID)
+        }
+    }, [])
+
     return (
         <Flex className='current form details__atttributes' flexDirection='row' gap={aliasTokens.space700} flexWrap='wrap'>
             <FormAttributeSelect 
@@ -121,7 +127,7 @@ export const AudioSMPAttributeGroup: FC<AudioSMPAttributeProps> = ({
                 label='ri_id'
                 title='RI ID'
                 size='compact'
-                items={dropdowns.ri_id.filter(ri => ri.lob === "Audio")}
+                items={dropdowns.ri_id.filter(ri => ri.lob === "Audio" || ri.lob === "Inbound")}
                 selectedValue={formRef.ri_id}
                 onChange={(value) => {
                     onFieldChange("ri_id", value)
@@ -148,7 +154,7 @@ export const AudioSMPAttributeGroup: FC<AudioSMPAttributeProps> = ({
                 title='RI Site Name'
                 size='compact'
                 items={dropdowns.site_name_id}  
-                selectedValue={formRef.site_name_id} 
+                selectedValue={formRef.site_name_id}// ?? (dropdowns.ri_id.find(ri => ri.value === formRef.ri_id) ? dropdowns.ri_id.find(ri => ri.value === formRef.ri_id).siteNameID : null)}
                 onChange={(value) => { onFieldChange("site_name_id", value) }}                                                               
             />
             <FormAttributeInput

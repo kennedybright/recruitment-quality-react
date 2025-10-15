@@ -46,8 +46,8 @@ export interface FormAIContextProps extends Omit<FormContextProps, 'createNewFor
 	defaultFields: FormField[]
 	submitActionMessage: string
 	totalSubmission: number
-	onSubmitCurrent: () => void
-	onSubmitAll: () => void
+	onSubmitCurrent: () => Promise<void>
+	onSubmitAll: () => Promise<void>
 }
 
 // Create the context to manage QA monitoring activities
@@ -148,10 +148,10 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
 		onSuccess: (data) => { // Updates the qaForms data storage
 			if (data && data.length > 0) {
 				const newAIFormData: Form[] = data.map((form, ndx) => {
-					const { formattedDate, formattedTime } = formatDateTime(new Date())
+					// const { formattedDate, formattedTime } = formatDateTime(new Date())
 					const metadata: FormMetadata = {
-						recordDate: formattedDate, 
-						recordTime: formattedTime,
+						recordDate: form.record_date, //formattedDate, 
+						recordTime: form.record_time, //formattedTime,
 						...userData
 					}
 
@@ -172,6 +172,10 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
 			} else {
 				setQaForms({ forms: [], activeFormID: undefined, queryCache: [], formChanges: [] }) // no qaForms data
 			}
+		},
+		onError: (err) => { // Updates the qaForms data storage to empty
+			console.error("Form data fetch failed: ", err)
+			setQaForms({ forms: [], activeFormID: undefined, queryCache: [], formChanges: [] }) // no qaForms data
 		}
 	})
 

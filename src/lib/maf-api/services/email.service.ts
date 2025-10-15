@@ -1,7 +1,7 @@
 // APIs for Email & Other Communication Services
 
 import { blobToBase64 } from '../../../lib/utils/reports/formatReport'
-import { isProd, TECH_SUPPORT_ADMIN } from '../../env'
+import { CCQA_MANAGER, isProd, TECH_SUPPORT_ADMIN } from '../../env'
 import axiosInstance from '../client/axiosInstance'
 
 // Trigger an email when an error occurs
@@ -30,7 +30,7 @@ export const emailReport = async(
     const base64PDF = await blobToBase64(pdfBlob)
     const { data } = await axiosInstance.post('/emailReport',
         {
-            emailTo: isProd ? recipients : TECH_SUPPORT_ADMIN.email,
+            emailTo: isProd ? recipients : [TECH_SUPPORT_ADMIN.email, CCQA_MANAGER.email],
             pdfBase64: base64PDF,
             filename: pdfFilename,
             name: report,

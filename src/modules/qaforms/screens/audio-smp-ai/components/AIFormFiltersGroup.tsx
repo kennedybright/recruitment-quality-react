@@ -64,7 +64,6 @@ export const AIFormFiltersGroup: FC = () => {
                         minDate={new Date().setMonth(new Date().getMonth() - 12, 1)} // limited to 12 months
                         dateFormat="dd MMM yyyy"
                         clearable
-                        disabled={!!recordDateRange}
                         value={recordDate}
                         onChange={({ value }: { value: PartialPickerDate}) => {
                             setRecordDate(value)
@@ -83,7 +82,6 @@ export const AIFormFiltersGroup: FC = () => {
                         data-selector='record_date_range'
                         clearable
                         value={recordDateRange}
-                        disabled={!!recordDate}
                         onSubmit={({ value }: { value: [PartialPickerDate, PartialPickerDate]}) => {
                             setRecordDateRange(value)
                             setRecordDate(undefined)

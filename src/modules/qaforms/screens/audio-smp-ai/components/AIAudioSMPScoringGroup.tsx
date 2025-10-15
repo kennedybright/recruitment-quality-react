@@ -21,7 +21,7 @@ export const AIAudioSMPScoringGroup: FC<Omit<AudioSMPScoringProps, 'enableSkipLo
     readonlyData,
     hookform,
  }) => {
-    const { dropdowns, audioSMPScoring, formFields } = useDataContext()
+    const { dropdowns, audioSMPScoring, skipLogicAudio, formFields } = useDataContext()
     const audioSMPFields = formFields[1001]
     const scoringDropdowns = getFieldsbyType(audioSMPFields, "scoring_dropdown")
 
@@ -33,7 +33,7 @@ export const AIAudioSMPScoringGroup: FC<Omit<AudioSMPScoringProps, 'enableSkipLo
             gridTemplateColumns="1fr 1fr 1fr 1fr"
         >
             {Object.values(scoringDropdowns).map(f => { // scoring dropdown fields
-                const result = readonlyData[f.label] ? (f.label === "disposition" ? readonlyData[f.label] : Object.values(readonlyData[f.label])[0] as number) : null
+                const result = readonlyData[f.label] ? (f.label === "disposition" ? readonlyData[f.label] : (Object.entries(readonlyData[f.label]).find(([key, value]) => key.endsWith("-result")) ? Object.entries(readonlyData[f.label]).find(([key, value]) => key.endsWith("-result"))[1] as number : NaN)) : null
                 const deviation = f.label === "disposition" 
                     ? (formRef.disposition === "CORRECT" ? "Passed" : "Failed") 
                     : DEVIATIONCATEGORY.find(catg => catg.value === result)?.label
@@ -45,9 +45,11 @@ export const AIAudioSMPScoringGroup: FC<Omit<AudioSMPScoringProps, 'enableSkipLo
                             mode={mode}
                             label={f.label}
                             title={f.name}
-                            value={result}
+                            value={!Number.isNaN(result) ? result : null}
+                            error={Number.isNaN(result)}
+                            helpText={Number.isNaN(result) ? "Error occured in data source." : undefined}
                             size="regular"
-                            chip={result ? { label: deviation, variant: deviationColor } : undefined}
+                            chip={result === null ? undefined : { label: deviation, variant: deviationColor }}
                         />
                         <AIScoringAnalysis label={f.name} analysis={readonlyData[f.label]} />
                     </Flex>
@@ -66,6 +68,17 @@ export const AIAudioSMPScoringGroup: FC<Omit<AudioSMPScoringProps, 'enableSkipLo
     
     const calltypeError = formErrors?.find(error => error.error.includes("Invalid Calltype"))
     const framecodeError = formErrors?.find(error => error.error.includes("Invalid Framecode"))
+
+    const [skipLogic, setSkipLogic] = useState<FieldLogic[]>(skipLogicAudio) // Filtered skip logic list
+    useEffect(() => { // Update filtered skip logic list based on call type and form type
+        const calltype = formRef.call_type_id
+        const audioSmp = formRef.audio_smp
+        
+        if (calltype && !calltypeError) {
+            const filteredLogic = skipLogicAudio?.filter((logic) => logic.calltype === calltype && logic.audioSMP === audioSmp)
+            if (filteredLogic) setSkipLogic(filteredLogic) // update skip logic list
+        } else setSkipLogic([]) // reset filtered skip logic list
+    }, [formRef.audio_smp, formRef.call_type_id])
 
     return (
         <Flex column className="form-body-scoring">
@@ -93,9 +106,10 @@ export const AIAudioSMPScoringGroup: FC<Omit<AudioSMPScoringProps, 'enableSkipLo
                 gridTemplateColumns="1fr 1fr 1fr 1fr"
             >
                 {Object.values(filteredScoringWoDisposition).map(f => { // scoring dropdown fields
-                    const result = formRef[f.label] !== null ? Object.entries(formRef[f.label]).find(([key, value]) => key.endsWith("-result"))[1] as number : null
+                    const result = formRef[f.label] !== null ? (Object.entries(formRef[f.label]).find(([key, value]) => key.endsWith("-result")) ? Object.entries(formRef[f.label]).find(([key, value]) => key.endsWith("-result"))[1] as number : NaN) : null
                     const deviation = DEVIATIONCATEGORY.find(catg => catg.value === result)?.label
                     const deviationColor = deviation === "Passed" ? Chip.Variant.success : (deviation === "Validation Needed" ? Chip.Variant.warning : Chip.Variant.danger)
+                    console.log(f.label, " result, deviation: ", result, deviation)
                     
                     return (
                         <Flex column gap={aliasTokens.space200}>
@@ -104,8 +118,14 @@ export const AIAudioSMPScoringGroup: FC<Omit<AudioSMPScoringProps, 'enableSkipLo
                                 label={f.label}
                                 title={f.name}
                                 items={updatedScoring}
-                                error={(calltypeError || framecodeError) ? true : false}
-                                selectedValue={result}
+                                error={(calltypeError || framecodeError) || Number.isNaN(result) ? true : false}
+                                helpText={Number.isNaN(result) ? "Error occured in data source." : undefined}
+                                selectedValue={!Number.isNaN(result) ? result : null}
+                                disabled={
+                                    skipLogic && 
+                                    skipLogic.length > 0 && 
+                                    skipLogic.find((logic) => logic.field === f.label)?.disabled
+                                }
                                 onChange={(value) => {
                                     const resultKey = `${f.label.replaceAll("_", "-")}-result`
 
