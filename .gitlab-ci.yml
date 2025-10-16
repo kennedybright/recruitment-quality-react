@@ -205,15 +205,15 @@ before_script:
 #   image:
 #     name: registry.gitlab.com/nielsen-media/maf/maf-public/packages/cicd/node:18.15.0
 
-build:
-  stage: build
-  extends: .release-image
-  variables:
-    CI_REGISTRY_IMAGE: 853826018359.dkr.ecr.us-east-1.amazonaws.com/maf/ci-cd/docker-node-ci # registry.gitlab.com/nielsen-media/maf/maf-public/packages/cicd/node:18.15.0 
-  tags:
-   - maf-dev
-  only:
-   - tags
+# build:
+#   stage: build
+#   extends: .release-image
+#   variables:
+#     CI_REGISTRY_IMAGE: 853826018359.dkr.ecr.us-east-1.amazonaws.com/maf/ci-cd/docker-node-ci # registry.gitlab.com/nielsen-media/maf/maf-public/packages/cicd/node:18.15.0 
+#   tags:
+#    - maf-dev
+#   only:
+#    - tags
 
 # deploymentManifest:
 #   extends: .deployBase
