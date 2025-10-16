@@ -26,17 +26,10 @@ include:
         - '/Jobs/v2/stages/deployFrontend/manual.yml'
     rules:
         - if: $ENV
-  # - project: nielsen-media/maf/ci-cd/gitlab-ci-common
-  #   ref: *ci_version
-  #   file:
-  #     - /Jobs/v2/stages/base.yml
-  #     - /Jobs/v2/stages/initPipeline.yml
-  #     - /Jobs/v2/stages/bumpVersionmaf.yml
-
-  # - project: 'nielsen-media/me/planning/infra/gitlab-ci-tools'
-  #   ref: 4.10.1
-  #   file:
-  #     - '/gitlab-templates/ecr/template.yml'
+  - project: 'nielsen-media/me/planning/infra/gitlab-ci-tools'
+    ref: 4.10.1
+    file:
+      - '/gitlab-templates/ecr/template.yml'
 
 variables:
   PACKAGE_MANAGER: "yarn"
