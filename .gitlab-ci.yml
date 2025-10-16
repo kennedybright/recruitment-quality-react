@@ -101,7 +101,7 @@ stages:
   - mafInit
   - test
   - mafPreBuildTest
-  - mafBumpVersion
+  # - mafBumpVersion
   - mafBinaryPublish
   - mafDeploymentManifest
   - mafDeployFrontend
@@ -119,19 +119,14 @@ before_script:
   - echo $CI_COMMIT_BRANCH
   - echo $CI_DEFAULT_BRANCH
   - echo $CI_PIPELINE_SOURCE
-  - echo $CI_MERGE_REQUEST_IID
+  - echo $CI_MERGE_REQUEST_ID
   - echo $CI_PROJECT_DIR
   - echo $CI_PROJECT_PATH
   - echo $CI_NODE_VERSION
   - echo $PACKAGE_DIR
   - echo $PACKAGE_MANAGER
-  - echo $NPM_LOG_LEVEL
-  - echo $APP_LOG_LEVEL
-  - echo $BASH_UTILS_LOG_LEVEL
-  - echo $MAF_APP_TOKEN_${ENV}
-  - echo $MAF_API_TOKEN_${ENV}
-  - echo $CENTRALIZED_PROJECT_ID
-  - echo $GITLAB_TOKEN
+  - echo $MAF_APP_TOKEN
+  - echo $MAF_API_TOKEN
 
 # .gitlabRunnerTags:
 #   tags:
