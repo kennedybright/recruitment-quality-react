@@ -1,21 +1,21 @@
-.ci_version: v1.8.8
+.ci_version: &ci_version v1.13.8
 include:
   - project: nielsen-media/maf/ci-cd/gitlab-ci-common
-    ref: v1.8.8
+    ref: *ci_version
     file:
       - /Jobs/v2/stages/base.yml
       - /Jobs/v2/stages/initPipeline.yml
-      # - /Jobs/v2/stages/bumpVersionmaf.yml
+      - /Jobs/v2/stages/bumpVersionmaf.yml
 
-  - project: 'nielsen-media/me/planning/infra/gitlab-ci-tools'
-    ref: 4.4.0
+  - project: 'nielsen-media/me/planning/devops/gitlab-ci-tools'
+    ref: 4.10.1
     file:
       - '/gitlab-templates/ecr/template.yml'
 
 stages:
   - build
   - mafInit
-  # - mafBumpVersion
+  - mafBumpVersion
   - mafDeploymentManifest
   - mafDeployFrontend
 
