@@ -38,18 +38,6 @@ include:
   #   file:
   #     - '/gitlab-templates/ecr/template.yml'
 
-stages:
-  # - build
-  - mafInit
-  - test
-  - mafPreBuildTest
-  - mafBumpVersion
-  - mafBinaryPublish
-  - mafDeploymentManifest
-  - mafDeployFrontend
-  - mafPreReleaseVersion
-
-
 variables:
   PACKAGE_MANAGER: "yarn"
   CI_REPO_BRANCH: *ci_version
@@ -101,7 +89,30 @@ variables:
   SERVICE_NAME: 'maf-starter-fe'
   SCRIPTS_DIR: .
   PACKAGE_DIR: "."
+  CI_NODE_VERSION: 22.12.0
 
+workflow:
+  rules:
+    - if: '$ENV == "alpha"'
+      variables:
+        MAF_APP_TOKEN: $MAF_APP_TOKEN_ALPHA
+        MAF_API_TOKEN: $MAF_API_TOKEN_ALPHA
+        
+    - if: '$ENV == "prod"'
+      variables:
+        MAF_APP_TOKEN: $MAF_APP_TOKEN_PROD
+        MAF_API_TOKEN: $MAF_API_TOKEN_PROD
+
+stages:
+  # - build
+  - mafInit
+  - test
+  - mafPreBuildTest
+  - mafBumpVersion
+  - mafBinaryPublish
+  - mafDeploymentManifest
+  - mafDeployFrontend
+  - mafPreReleaseVersion
 
 #============== JOBS =============#
 before_script:
@@ -201,15 +212,15 @@ before_script:
 #   image:
 #     name: registry.gitlab.com/nielsen-media/maf/maf-public/packages/cicd/node:18.15.0
 
-# build:
-#   stage: build
-#   extends: .release-image
-#   variables:
-#     CI_REGISTRY_IMAGE: registry.gitlab.com/nielsen-media/maf/maf-public/packages/cicd/node:18.15.0 # 853826018359.dkr.ecr.us-east-1.amazonaws.com/maf/ci-cd/docker-node-ci
-#   tags:
-#    - maf-dev
-#   only:
-#    - tags
+build:
+  stage: build
+  extends: .release-image
+  variables:
+    CI_REGISTRY_IMAGE: 853826018359.dkr.ecr.us-east-1.amazonaws.com/maf/ci-cd/docker-node-ci # registry.gitlab.com/nielsen-media/maf/maf-public/packages/cicd/node:18.15.0 
+  tags:
+   - maf-dev
+  only:
+   - tags
 
 # deploymentManifest:
 #   extends: .deployBase
