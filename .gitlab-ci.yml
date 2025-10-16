@@ -1,27 +1,58 @@
 .ci_version: &ci_version v1.13.8
 include:
-  - project: nielsen-media/maf/ci-cd/gitlab-ci-common
+  - project: 'nielsen-media/maf/ci-cd/gitlab-ci-common'
     ref: *ci_version
     file:
-      - /Jobs/v2/stages/base.yml
-      - /Jobs/v2/stages/initPipeline.yml
-      - /Jobs/v2/stages/bumpVersionmaf.yml
-
-  - project: 'nielsen-media/me/planning/infra/gitlab-ci-tools'
-    ref: 4.10.1
+      - '/Jobs/v2/stages/sast.yml'
+      - '/Jobs/v2/stages/helperScripts.yml'
+      - '/Jobs/v2/stages/base.yml'
+      - '/Jobs/v2/stages/initPipeline.yml'
+      - '/Jobs/v2/stages/bumpVersionmaf.yml'
+      - '/Jobs/v2/stages/deployManifest.yml'
+      - '/Jobs/v2/stages/binaryPublish.yml'
+      - '/Jobs/v2/stages/deployFrontend/base.yml'
+      - '/Jobs/v2/stages/deployFrontend/defaultBranch.yml'
+      - '/Jobs/v2/stages/preBuildTests.yml'
+    rules:
+      - if: $ENV == null
+  - project: 'nielsen-media/maf/ci-cd/gitlab-ci-common'
+    ref: *ci_version
     file:
-      - '/gitlab-templates/ecr/template.yml'
+        - '/Jobs/v2/stages/helperScripts.yml'
+        - '/Jobs/v2/stages/base.yml'
+        - '/Jobs/v2/stages/initPipeline.yml'
+        - '/Jobs/v2/stages/deployManifest.yml'
+        - '/Jobs/v2/stages/deployFrontend/base.yml'
+        - '/Jobs/v2/stages/deployFrontend/manual.yml'
+    rules:
+        - if: $ENV
+  # - project: nielsen-media/maf/ci-cd/gitlab-ci-common
+  #   ref: *ci_version
+  #   file:
+  #     - /Jobs/v2/stages/base.yml
+  #     - /Jobs/v2/stages/initPipeline.yml
+  #     - /Jobs/v2/stages/bumpVersionmaf.yml
+
+  # - project: 'nielsen-media/me/planning/infra/gitlab-ci-tools'
+  #   ref: 4.10.1
+  #   file:
+  #     - '/gitlab-templates/ecr/template.yml'
 
 stages:
-  - build
+  # - build
   - mafInit
+  - test
+  - mafPreBuildTest
   - mafBumpVersion
+  - mafBinaryPublish
   - mafDeploymentManifest
   - mafDeployFrontend
+  - mafPreReleaseVersion
+
 
 variables:
   PACKAGE_MANAGER: "yarn"
-  CI_REPO_BRANCH: v1.8.8
+  CI_REPO_BRANCH: *ci_version
   INSTALL_MODULES: 'true'
 
   ENV:
@@ -55,144 +86,178 @@ variables:
   MAF_MANIFEST_PATH: ./apps/usremoterecqa/usremoterecqa.json
   ##================== *** END deployManifest END *** ================##
 
-  # BUMP_VERSION_TYPE: 'semantic'
+  ##================== *** deployFrontend *** ================##
+  NEXUS_MAVEN_REPO: panel-recruitment-quality-frontend
+  NEXUS_APP_NAME: usremoterecqa
+  ##================== *** END deployFrontend END *** ================##
+
+  BUMP_VERSION_TYPE: 'semantic'
   GITLAB_REGISTRY_DEPLOY: 'true'
   PRE_PUBLISH_COMMANDS: build:prod
   PRE_BUILD_COMMANDS: build:prod
   PUBLISH_PRE_RELEASE: 'false'
   USE_LINTER: 'true'
   LINTER_COMMAND: lint
+  SERVICE_NAME: 'maf-starter-fe'
+  SCRIPTS_DIR: .
+  PACKAGE_DIR: "."
+
 
 #============== JOBS =============#
-.gitlabRunnerTags:
-  tags:
-    - maf-dev
+before_script:
+  - echo $ENV
+  - echo $APPLICATION_NAME
+  - echo $DEPLOY_TYPE
+  - echo $VERSION
+  - echo $CI_PIPELINE_IID
+  - echo $CI_COMMIT_REF_SLUG
+  - echo $CI_COMMIT_REF_NAME
+  - echo $CI_COMMIT_BRANCH
+  - echo $CI_DEFAULT_BRANCH
+  - echo $CI_PIPELINE_SOURCE
+  - echo $CI_MERGE_REQUEST_IID
+  - echo $CI_PROJECT_DIR
+  - echo $CI_PROJECT_PATH
+  - echo $CI_NODE_VERSION
+  - echo $PACKAGE_DIR
+  - echo $PACKAGE_MANAGER
+  - echo $NPM_LOG_LEVEL
+  - echo $APP_LOG_LEVEL
+  - echo $BASH_UTILS_LOG_LEVEL
+  - echo $MAF_APP_TOKEN_${ENV}
+  - echo $MAF_API_TOKEN_${ENV}
+  - echo $CENTRALIZED_PROJECT_ID
+  - echo $GITLAB_TOKEN
 
-.base:
-  extends: .gitlabRunnerTags
-  image: registry.gitlab.com/nielsen-media/maf/maf-public/packages/cicd/node:18.15.0 # image: 853826018359.dkr.ecr.us-east-1.amazonaws.com/maf/ci-cd/docker-node-ci #amazonlinux:2023
-  before_script:
-    - echo $ENV
-    - echo $APPLICATION_NAME
-    - echo $DEPLOY_TYPE
-    - echo $VERSION
-    - echo $CI_PIPELINE_IID
-    - echo $CI_COMMIT_REF_SLUG
-    - echo $CI_COMMIT_REF_NAME
-    - echo $CI_COMMIT_BRANCH
-    - echo $CI_DEFAULT_BRANCH
-    - echo $CI_PIPELINE_SOURCE
-    - echo $CI_MERGE_REQUEST_IID
-    - echo $CI_PROJECT_DIR
-    - echo $CI_PROJECT_PATH
-    - echo $CI_NODE_VERSION
-    - echo $PACKAGE_DIR
-    - echo $PACKAGE_MANAGER
-    - echo $NPM_LOG_LEVEL
-    - echo $APP_LOG_LEVEL
-    - echo $BASH_UTILS_LOG_LEVEL
-    - echo $MAF_APP_TOKEN_${ENV}
-    - echo $MAF_API_TOKEN_${ENV}
-    - echo $CENTRALIZED_PROJECT_ID
-    - echo $GITLAB_TOKEN
-    - if [ "$BASH_UTILS_LOG_LEVEL" == "debug" ]; then set -o; fi
-  cache:
-    - key: init-node-modules-$MAF_CI_VERSION
-      paths:
-      - continuous-integration/
-      - .npmrc
-      policy: pull
+# .gitlabRunnerTags:
+#   tags:
+#     - maf-dev
+
+# .base:
+#   extends: .gitlabRunnerTags
+#   image: registry.gitlab.com/nielsen-media/maf/maf-public/packages/cicd/node:18.15.0 # image: 853826018359.dkr.ecr.us-east-1.amazonaws.com/maf/ci-cd/docker-node-ci #amazonlinux:2023
+#   before_script:
+#     - echo $ENV
+#     - echo $APPLICATION_NAME
+#     - echo $DEPLOY_TYPE
+#     - echo $VERSION
+#     - echo $CI_PIPELINE_IID
+#     - echo $CI_COMMIT_REF_SLUG
+#     - echo $CI_COMMIT_REF_NAME
+#     - echo $CI_COMMIT_BRANCH
+#     - echo $CI_DEFAULT_BRANCH
+#     - echo $CI_PIPELINE_SOURCE
+#     - echo $CI_MERGE_REQUEST_IID
+#     - echo $CI_PROJECT_DIR
+#     - echo $CI_PROJECT_PATH
+#     - echo $CI_NODE_VERSION
+#     - echo $PACKAGE_DIR
+#     - echo $PACKAGE_MANAGER
+#     - echo $NPM_LOG_LEVEL
+#     - echo $APP_LOG_LEVEL
+#     - echo $BASH_UTILS_LOG_LEVEL
+#     - echo $MAF_APP_TOKEN_${ENV}
+#     - echo $MAF_API_TOKEN_${ENV}
+#     - echo $CENTRALIZED_PROJECT_ID
+#     - echo $GITLAB_TOKEN
+#     - if [ "$BASH_UTILS_LOG_LEVEL" == "debug" ]; then set -o; fi
+#   cache:
+#     - key: init-node-modules-$MAF_CI_VERSION
+#       paths:
+#       - continuous-integration/
+#       - .npmrc
+#       policy: pull
 
 
-.deployBase:
-  environment:
-    name: $ENV
-  extends: .base
-  before_script:
-    - grep -m 1 'model name' /proc/cpuinfo
-    - grep -c 'model name' /proc/cpuinfo
-    - echo $CI_PIPELINE_IID
-    - echo $CI_COMMIT_REF_SLUG
-    - echo "CI_COMMIT_REF_NAME $CI_COMMIT_REF_NAME"
-    - echo "CI_COMMIT_BRANCH - $CI_COMMIT_BRANCH"
-    - echo "CI_PIPELINE_SOURCE - $CI_PIPELINE_SOURCE"
-    - echo "CI_COMMIT_REF_NAME $CI_COMMIT_REF_NAME"
-    - echo "CI_REPO_BRANCH $CI_REPO_BRANCH"
-    - if ! [[ -d continuous-integration ]] ; then git clone -b $CI_REPO_BRANCH
-      https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/nielsen-media/maf/ci-cd/gitlab-ci-common.git
-      continuous-integration; fi
-    - cd continuous-integration/utils; . node_backend_helper.sh; cd -
-    - if ! configureNpmCreds $NPM_USER $NPM_PASS; then
-      installPreRunUtilsForAlpineImage; configureNpmCreds $NPM_USER $NPM_PASS;
-      fi
-    - echo "Perform command - mv $CI_PROJECT_DIR/node_modules
-      $CI_PROJECT_DIR/$SCRIPTS_DIR/node_modules || true || true. If it's the
-      same directory, failure is OK."
-    - mv $CI_PROJECT_DIR/node_modules $CI_PROJECT_DIR/$SCRIPTS_DIR/node_modules
-      || true
-    - setNpmrc $SCRIPTS_DIR
-    - cat .npmrc
-    - yarn install
-  image:
-    name: registry.gitlab.com/nielsen-media/maf/maf-public/packages/cicd/node:18.15.0
+# .deployBase:
+#   environment:
+#     name: $ENV
+#   extends: .base
+#   before_script:
+#     - grep -m 1 'model name' /proc/cpuinfo
+#     - grep -c 'model name' /proc/cpuinfo
+#     - echo $CI_PIPELINE_IID
+#     - echo $CI_COMMIT_REF_SLUG
+#     - echo "CI_COMMIT_REF_NAME $CI_COMMIT_REF_NAME"
+#     - echo "CI_COMMIT_BRANCH - $CI_COMMIT_BRANCH"
+#     - echo "CI_PIPELINE_SOURCE - $CI_PIPELINE_SOURCE"
+#     - echo "CI_COMMIT_REF_NAME $CI_COMMIT_REF_NAME"
+#     - echo "CI_REPO_BRANCH $CI_REPO_BRANCH"
+#     - if ! [[ -d continuous-integration ]] ; then git clone -b $CI_REPO_BRANCH
+#       https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/nielsen-media/maf/ci-cd/gitlab-ci-common.git
+#       continuous-integration; fi
+#     - cd continuous-integration/utils; . node_backend_helper.sh; cd -
+#     - if ! configureNpmCreds $NPM_USER $NPM_PASS; then
+#       installPreRunUtilsForAlpineImage; configureNpmCreds $NPM_USER $NPM_PASS;
+#       fi
+#     - echo "Perform command - mv $CI_PROJECT_DIR/node_modules
+#       $CI_PROJECT_DIR/$SCRIPTS_DIR/node_modules || true || true. If it's the
+#       same directory, failure is OK."
+#     - mv $CI_PROJECT_DIR/node_modules $CI_PROJECT_DIR/$SCRIPTS_DIR/node_modules
+#       || true
+#     - setNpmrc $SCRIPTS_DIR
+#     - cat .npmrc
+#     - yarn install
+#   image:
+#     name: registry.gitlab.com/nielsen-media/maf/maf-public/packages/cicd/node:18.15.0
 
-build:
-  stage: build
-  extends: .release-image
-  variables:
-    CI_REGISTRY_IMAGE: registry.gitlab.com/nielsen-media/maf/maf-public/packages/cicd/node:18.15.0 # 853826018359.dkr.ecr.us-east-1.amazonaws.com/maf/ci-cd/docker-node-ci
-  tags:
-   - maf-dev
-  only:
-   - tags
+# build:
+#   stage: build
+#   extends: .release-image
+#   variables:
+#     CI_REGISTRY_IMAGE: registry.gitlab.com/nielsen-media/maf/maf-public/packages/cicd/node:18.15.0 # 853826018359.dkr.ecr.us-east-1.amazonaws.com/maf/ci-cd/docker-node-ci
+#   tags:
+#    - maf-dev
+#   only:
+#    - tags
 
-deploymentManifest:
-  extends: .deployBase
-  stage: mafDeploymentManifest
-  script:
-    - FORMATED_APP_NAME="${APPLICATION_NAME/-/_}"
-    - MAF_APP_TOKEN=$MAF_APP_TOKEN${ENV^^}
-    - echo $MAF_APP_TOKEN
-    - echo "About to install @nielsen-media/maf-cli"
-    - yarn add -D @nielsen-media/maf-cli --force
-    - ENV_UPPER_CASE=${ENV^^}
-    - maf-cli get manifest --app-name $APPLICATION_NAME
-    - runDeployUtil ${ENV_UPPER_CASE} $APPLICATION_NAME $MAF_APP_TOKEN
-      "manifest" "./${APPLICATION_NAME}.json"
-  rules:
-    - if: $ENV!="" && $APPLICATION_NAME!="" && $DEPLOY_TYPE=="manifest"
+# deploymentManifest:
+#   extends: .deployBase
+#   stage: mafDeploymentManifest
+#   script:
+#     - FORMATED_APP_NAME="${APPLICATION_NAME/-/_}"
+#     - MAF_APP_TOKEN=$MAF_APP_TOKEN${ENV^^}
+#     - echo $MAF_APP_TOKEN
+#     - echo "About to install @nielsen-media/maf-cli"
+#     - yarn add -D @nielsen-media/maf-cli --force
+#     - ENV_UPPER_CASE=${ENV^^}
+#     - maf-cli get manifest --app-name $APPLICATION_NAME
+#     - runDeployUtil ${ENV_UPPER_CASE} $APPLICATION_NAME $MAF_APP_TOKEN
+#       "manifest" "./${APPLICATION_NAME}.json"
+#   rules:
+#     - if: $ENV!="" && $APPLICATION_NAME!="" && $DEPLOY_TYPE=="manifest"
 
-deployFrontend:
-  extends: .deployBase
-  stage: mafDeployFrontend
-  script:
-    - FORMATED_APP_NAME="${APPLICATION_NAME/-/_}"
-    - MAF_APP_TOKEN=$APP_TOKEN_${ENV^^}
-    - echo $MAF_APP_TOKEN
-    - ARTIFACT_REPOSITORY_VARIABLE_NAME=${FORMATED_APP_NAME^^}_ARTIFACT_REPOSITORY
-    - echo ${ARTIFACT_REPOSITORY_VARIABLE_NAME}
-    - ARTIFACT_REPOSITORY=${!ARTIFACT_REPOSITORY_VARIABLE_NAME}
-    - echo ${ARTIFACT_REPOSITORY}
-    - ARTIFACT_APP_NAME=$APPLICATION_NAME
-    - echo ${ARTIFACT_APP_NAME}
+# deployFrontend:
+#   extends: .deployBase
+#   stage: mafDeployFrontend
+#   script:
+#     - FORMATED_APP_NAME="${APPLICATION_NAME/-/_}"
+#     - MAF_APP_TOKEN=$APP_TOKEN_${ENV^^}
+#     - echo $MAF_APP_TOKEN
+#     - ARTIFACT_REPOSITORY_VARIABLE_NAME=${FORMATED_APP_NAME^^}_ARTIFACT_REPOSITORY
+#     - echo ${ARTIFACT_REPOSITORY_VARIABLE_NAME}
+#     - ARTIFACT_REPOSITORY=${!ARTIFACT_REPOSITORY_VARIABLE_NAME}
+#     - echo ${ARTIFACT_REPOSITORY}
+#     - ARTIFACT_APP_NAME=$APPLICATION_NAME
+#     - echo ${ARTIFACT_APP_NAME}
 
-    - echo "About to install @nielsen-media/maf-cli"
-    - yarn add -D @nielsen-media/maf-cli --force
-    - ENV_UPPER_CASE=${ENV^^}
-    - echo 'deploy frontend from gitlab' app- $ARTIFACT_REPOSITORY, file
-      $ARTIFACT_APP_NAME, version $VERSION
+#     - echo "About to install @nielsen-media/maf-cli"
+#     - yarn add -D @nielsen-media/maf-cli --force
+#     - ENV_UPPER_CASE=${ENV^^}
+#     - echo 'deploy frontend from gitlab' app- $ARTIFACT_REPOSITORY, file
+#       $ARTIFACT_APP_NAME, version $VERSION
 
-    - echo "Starting To deploy Frontend Application ..."
-    - ENV=$1
-    - MAF_DEPLOYMENT_ENV=$ENV_UPPER_CASE # ${ENV^^}
-    - CURR_APP_TOKEN=$MAF_APP_TOKEN
-    - CURRENT_VERSION=$2
-    - APP_NAME=$(getAppName)
-    - CURRENT_APPLICATION_RUNNING_PIPELINE=`echo "$APP_NAME" | awk '{ print toupper($CURRENT_VERSION) }'`
-    - REPO=$(getRepository)
-    - CURR_LOCATION_TO_SAVE="${APP_NAME}.zip"
-    - echo $MAF_DEPLOYMENT_ENV $CURRENT_APPLICATION_RUNNING_PIPELINE $CURR_APP_TOKEN $CURR_LOCATION_TO_SAVE
-    # - downloadCurrentArtifactFromGitlab $REPO $APP_NAME $CURRENT_VERSION $CURR_LOCATION_TO_SAVE
-    - runDeployUtil $MAF_DEPLOYMENT_ENV $CURRENT_APPLICATION_RUNNING_PIPELINE $CURR_APP_TOKEN "assets" $CURR_LOCATION_TO_SAVE || exit 1
-  rules:
-    - if: '$ENV!="" && $APPLICATION_NAME!="" && $DEPLOY_TYPE=="assets" && $VERSION!=""'
+#     - echo "Starting To deploy Frontend Application ..."
+#     - ENV=$1
+#     - MAF_DEPLOYMENT_ENV=$ENV_UPPER_CASE # ${ENV^^}
+#     - CURR_APP_TOKEN=$MAF_APP_TOKEN
+#     - CURRENT_VERSION=$2
+#     - APP_NAME=$(getAppName)
+#     - CURRENT_APPLICATION_RUNNING_PIPELINE=`echo "$APP_NAME" | awk '{ print toupper($CURRENT_VERSION) }'`
+#     - REPO=$(getRepository)
+#     - CURR_LOCATION_TO_SAVE="${APP_NAME}.zip"
+#     - echo $MAF_DEPLOYMENT_ENV $CURRENT_APPLICATION_RUNNING_PIPELINE $CURR_APP_TOKEN $CURR_LOCATION_TO_SAVE
+#     # - downloadCurrentArtifactFromGitlab $REPO $APP_NAME $CURRENT_VERSION $CURR_LOCATION_TO_SAVE
+#     - runDeployUtil $MAF_DEPLOYMENT_ENV $CURRENT_APPLICATION_RUNNING_PIPELINE $CURR_APP_TOKEN "assets" $CURR_LOCATION_TO_SAVE || exit 1
+#   rules:
+#     - if: '$ENV!="" && $APPLICATION_NAME!="" && $DEPLOY_TYPE=="assets" && $VERSION!=""'
