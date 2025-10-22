@@ -77,9 +77,9 @@ const ACMTable = <T,>({reportData, ...props}: ACMTableProps<T>) => {
                 const column = audioFormFields.find(field => field.label === key)
                 if (column) {
                     if (column.label === "sample_id") return { id: key, props: sampleIDColProps }
-                    if (column.fieldType === "Text") return { id: key, props: notesColProps }
-                    if (column.fieldType === "Dropdown") return { id: key, props: dropdownColProps }
-                    if (column.fieldType === "Checkbox") return { id: key, props: checkboxColProps }
+                    if (column.fieldType === "scoring_text") return { id: key, props: notesColProps }
+                    if (column.fieldType === "form_attribute") return { id: key, props: dropdownColProps }
+                    if (column.fieldType === "form_checkbox") return { id: key, props: checkboxColProps }
                 }
 
                 // return default uneditable column props 
@@ -173,6 +173,7 @@ const ACMTable = <T,>({reportData, ...props}: ACMTableProps<T>) => {
                     description: 'There are no records to display. Try adjusting your filters or check back later.'
                 }}
                 expanding={{
+                    getIsExpanded: ({ row }) => { console.log(row.original) },
                     renderSubComponent: ({ row }) => <AudioSMPQAForm mode='readonly' formID={row.original.record_number} readonlyData={row.original} />
                 }}
             >

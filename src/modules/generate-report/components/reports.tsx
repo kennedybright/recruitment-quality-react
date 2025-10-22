@@ -110,9 +110,8 @@ export const ReportProvider: FC = ({ children }) => {
             const { emailReport } = await import('../../../lib/maf-api/services/email.service')
             const filename = `${reportName} - ${formatPickerAsDate(reportDate)} - ${riID}`
 
-            let recipients = []
+            let recipients = ['uscallcenteraudioops@nielsen.com']
             if (riID[0] === "J") recipients.push('uscallcenteraudiogdlqualityreporting@nielsen.com') // add GDL distribution email to receipients list
-            recipients.push(CCQA_MANAGER.email, 'uscallcenteraudioops@nielsen.com')
 
             await emailReport(recipients, pdfBlob, reportName, filename, currentUser.qrID, riID)
             return 'success'

@@ -27,10 +27,13 @@ export const emailReport = async(
     qrID: string, 
     riID: string
 ): Promise<{}> => {
+    let updatedRecipients = [TECH_SUPPORT_ADMIN.email, CCQA_MANAGER.email] as string[]
+    if (isProd) updatedRecipients.push(...recipients)
+
     const base64PDF = await blobToBase64(pdfBlob)
     const { data } = await axiosInstance.post('/emailReport',
         {
-            emailTo: isProd ? recipients : [TECH_SUPPORT_ADMIN.email, CCQA_MANAGER.email],
+            emailTo: updatedRecipients,
             pdfBase64: base64PDF,
             filename: pdfFilename,
             name: report,

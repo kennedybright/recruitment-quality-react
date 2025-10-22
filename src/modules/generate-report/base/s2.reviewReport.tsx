@@ -23,25 +23,34 @@ const ReviewReport = () => {
     const [pdfRender, setPDFRender] = useState(null)
     const [renderError, setRenderError] = useState<string>(null)
 
-    const reportStartDate = new Date(formatPickerAsDate(reportDate))
-    const sixMonthsAgo = new Date(new Date().setMonth(reportStartDate.getMonth()-6)).toISOString().split("T")[0] // 6 months from the report date
+    const afterDate = useMemo(() => {
+        if (reportName && reportDate) {
+            const reportStartDate = new Date(formatPickerAsDate(reportDate))
+            const monthsAgo = reportName === "Call Monitoring Report" 
+                ? new Date(new Date().setMonth(reportStartDate.getMonth()-6)).toISOString().split("T")[0] // 6 months from the report date
+                : new Date(new Date().setMonth(reportStartDate.getMonth()-12)).toISOString().split("T")[0] // 12 months from the report date
+
+            return monthsAgo
+        }
+        return null
+    }, [reportName, reportDate])
+    
     const { data: cmrReportData, isLoading: isLoadingCMR, isError: isErrorCMR, error: errorCMR } = useCMRReportBuild(
-            {riID: riID, date: formatPickerAsDate(reportDate), afterDate: sixMonthsAgo}, 
-            {enabled: reportName === 'Call Monitoring Report' && !!riID && !!reportDate}
+            {riID: riID, date: formatPickerAsDate(reportDate), afterDate: afterDate},
+            {enabled: reportName === 'Call Monitoring Report' && !!riID && !!reportDate && !!afterDate}
         )
 
-    const twelveMonthsAgo = new Date(new Date().setMonth(reportStartDate.getMonth()-12)).toISOString().split("T")[0] // 12 months from the report date
     const { data: mcaReportData, isLoading: isLoadingMCA, isError: isErrorMCA, error: errorMCA } = useMCAReportBuild(
-            {riID: riID, date: formatPickerAsDate(reportDate), afterDate: twelveMonthsAgo}, 
-            {enabled: reportName === 'MCA Report' && !!riID && !!reportDate}
+            {riID: riID, date: formatPickerAsDate(reportDate), afterDate: afterDate},
+            {enabled: reportName === 'MCA Report' && !!riID && !!reportDate && !!afterDate}
         )
-
+        
     const { data, isLoading, isError, error } = useMemo(() => {
-        if (reportName === 'Call Monitoring Report') {
+        if (reportName === 'Call Monitoring Report' && cmrReportData) {
             return { data: cmrReportData, isLoading: isLoadingCMR, isError: isErrorCMR, error: errorCMR }
         }
 
-        if (reportName === 'MCA Report') {
+        if (reportName === 'MCA Report' && mcaReportData) {
             return { data: mcaReportData, isLoading: isLoadingMCA, isError: isErrorMCA, error: errorMCA }
         }
 

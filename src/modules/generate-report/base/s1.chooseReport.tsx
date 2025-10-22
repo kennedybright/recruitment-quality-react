@@ -5,7 +5,6 @@ import { ReportToggleButton, FlexButton, FlexText, StyledFilterDropdown } from '
 import { aliasTokens, useGDSConfig } from '@nielsen-media/maf-fc-foundation'
 import { useDataContext } from '../../../lib/context/data.context'
 import DatePicker, { PartialPickerDate } from '@nielsen-media/maf-fc-date-picker'
-import { formatPickerAsDate } from '../../../lib/utils/formatDateTime'
 
 const ChooseReport = () => {
     const { riID, reportName, setRI, setReport, reportDate, setReportDate } = useReportContext()
