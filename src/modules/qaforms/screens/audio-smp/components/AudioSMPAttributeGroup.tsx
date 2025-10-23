@@ -101,10 +101,11 @@ export const AudioSMPAttributeGroup: FC<AudioSMPAttributeProps> = ({
             }
 
             case 'edit': {
-                const { form, updateFormChange } = useEditContext()
+                const { form, updateFormChange, formErrors } = useEditContext()
                 
                 return {
                     formRef: form,
+                    formErrors: formErrors,
                     onFieldChange: updateFormChange
                 }
             }
@@ -113,11 +114,12 @@ export const AudioSMPAttributeGroup: FC<AudioSMPAttributeProps> = ({
     const formRef: FormRef = ref().formRef
     const onFieldChange = ref().onFieldChange
 
+    // Auto-populate RI Site Name when the current form's RI ID changes and its Site Name is not entered (only in AI mode)
     useEffect(() => {
         if (mode === 'ai' && dropdowns.ri_id.find(ri => ri.value === formRef.ri_id)) {
             if (formRef.site_name_id === null) onFieldChange('site_name_id', dropdowns.ri_id.find(ri => ri.value === formRef.ri_id).siteNameID)
         }
-    }, [])
+    }, [formRef.ri_id])
 
     return (
         <Flex className='current form details__atttributes' flexDirection='row' gap={aliasTokens.space700} flexWrap='wrap'>
