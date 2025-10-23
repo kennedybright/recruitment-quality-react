@@ -7,7 +7,7 @@ include:
       - '/Jobs/v2/stages/helperScripts.yml'
       - '/Jobs/v2/stages/base.yml'
       - '/Jobs/v2/stages/initPipeline.yml'
-      # - '/Jobs/v2/stages/bumpVersionmaf.yml'
+      - '/Jobs/v2/stages/bumpVersionmaf.yml'
       - '/Jobs/v2/stages/deployManifest.yml'
       - '/Jobs/v2/stages/binaryPublish.yml'
       - '/Jobs/v2/stages/deployFrontend/base.yml'
