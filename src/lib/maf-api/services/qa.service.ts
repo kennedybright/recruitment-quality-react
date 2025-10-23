@@ -79,6 +79,7 @@ export const fetchCalltypes = async(): Promise<FieldCatg[]> => {
     return data.map((calltype) => ({
         label: calltype.call_type_id,
         value: calltype.call_type_id,
+        name: calltype.call_type
     })) || []
 }
 
@@ -90,6 +91,7 @@ export const fetchSitenames = async(): Promise<FieldCatg[]> => {
     return data.map((sitename) => ({
         label: sitename.site_name_id,
         value: sitename.site_name_id,
+        name: sitename.site_name
     })) || []
 }
 
@@ -101,6 +103,7 @@ export const fetchFramecodes = async(): Promise<FieldCatg[]> => {
     return data.map((framecode) => ({
         label: framecode.frame_code_id,
         value: framecode.frame_code_id,
+        name: framecode.frame_code
     })) || []
 }
 

@@ -41,15 +41,5 @@ export function getAllCMRSummaryDates(forms: any[]): CMRSummaryDates {
         if (form.leading_bias === true) mcaDatesData.leading_bias.add(form.record_date)
     })
 
-    return {
-        address: [...mcaDatesData.address],
-        delayed_coding: [...mcaDatesData.delayed_coding],
-        persuading: [...mcaDatesData.persuading],
-        incorrect_disposition:[...mcaDatesData.incorrect_disposition],
-        verbatim_break: [...mcaDatesData.verbatim_break],
-        inaccurate_data: [...mcaDatesData.inaccurate_data],
-        improper_intro: [...mcaDatesData.improper_intro],
-        mandatory_text: [...mcaDatesData.mandatory_text],
-        leading_bias: [...mcaDatesData.leading_bias],
-    }
+    return Object.fromEntries(Object.entries(mcaDatesData).map(([key, set]) => ([key, [...set]])))
 }

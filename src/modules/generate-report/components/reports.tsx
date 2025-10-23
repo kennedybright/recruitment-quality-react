@@ -5,9 +5,7 @@ import { CMRReportData, MCAReportData } from '../../../lib/types/reports.types'
 import { Loading } from '../../../lib/components/feedback/LoaderSpinner'
 import { PartialPickerDate } from '@nielsen-media/maf-fc-date-picker'
 import { pdf } from '@react-pdf/renderer'
-import { useMAFContext } from '../../../maf-api'
 import { formatPickerAsDate } from '../../../lib/utils/formatDateTime'
-import { CCQA_MANAGER } from '../../../lib/env'
 
 interface ReportContextProps {
     qrID: string

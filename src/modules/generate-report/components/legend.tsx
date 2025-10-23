@@ -11,7 +11,7 @@ export const CallTypes: FC = () => {
             {callTypes?.map((ct, index) => (
                 <View key={index} style={legendStyles.row}>
                     <Text style={legendStyles.label}>{ct.label}</Text>
-                    <Text style={legendStyles.value}>{ct.value}</Text>
+                    <Text style={legendStyles.value}>{ct.name}</Text>
                 </View>
             ))}
         </View>
@@ -26,7 +26,7 @@ export const FrameCodes: FC = () => {
             {frameCodes?.map((fc, index) => (
                 <View key={index} style={legendStyles.row}>
                     <Text style={legendStyles.label}>{fc.label}</Text>
-                    <Text style={legendStyles.value}>{fc.value}</Text>
+                    <Text style={legendStyles.value}>{fc.name}</Text>
                 </View>
             ))}
         </View>

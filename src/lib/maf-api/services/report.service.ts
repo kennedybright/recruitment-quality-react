@@ -15,7 +15,7 @@ export type ReportAPIParams = {
 // Fetch QA forms by LOB (appID)
 export const fetchForms = async<T=any>(appID: number, params?: ReportAPIParams): Promise<T[]> => {
     const response = await axiosInstance.get<T[]>(apiRoutes.qa[appID].forms, {
-        params: { ri_id: params.riID, record_date: params.date, record_number: params.recordNumber }
+        params: { ri_id: params.riID, record_date: params.date, record_number: params.recordNumber, before_date: params.beforeDate, after_date: params.afterDate }
     })
     return response.data || []
 }
@@ -34,7 +34,7 @@ export const fetchAIForms = async<T=any>(appID: number, params?: ReportAPIParams
 // Fetch the MCA Report data
 export const fetchMCAData = async(params?: ReportAPIParams): Promise<ReportMCA[]> => {
     const response = await axiosInstance.get(apiRoutes.report.reportMCA, {
-        params: { ri_id: params.riID }
+        params: { ri_id: params.riID, record_date: params.date, before_date: params.beforeDate, after_date: params.afterDate }
     })
     return response.data || []
 }
@@ -42,7 +42,7 @@ export const fetchMCAData = async(params?: ReportAPIParams): Promise<ReportMCA[]
 // Fetch the Call Monitoring Report data
 export const fetchCMRData = async(params?: ReportAPIParams): Promise<ReportCMR[]> => {
     const response = await axiosInstance.get(apiRoutes.report.reportCMR, {
-        params: { ri_id: params.riID, record_date: params.date }
+        params: { ri_id: params.riID, record_date: params.date, before_date: params.beforeDate, after_date: params.afterDate }
     })
     return response.data || []
 }

@@ -9,14 +9,10 @@ import { Loading } from '../../../lib/components/feedback/LoaderSpinner'
 import { FETCHSTATUS, isEmpty } from '../../../lib/utils/helpers'
 import { useCMRReportBuild, useMCAReportBuild } from '../../../lib/maf-api/hooks/report.hooks'
 import { formatPickerAsDate } from '../../../lib/utils/formatDateTime'
-import { useDataContext } from '../../../lib/context/data.context'
-import { getFieldsbyType } from '../../../lib/utils/qa/buildQA'
-import { CMRReportData, MCAReportData, ReportCMR, ReportMCA } from '../../../lib/types/reports.types'
-import { getAllCMRSummaryDates, getDeviations } from '../../../lib/utils/reports/buildReport'
+import { CMRReportData, MCAReportData } from '../../../lib/types/reports.types'
 import { PDFViewer } from '@react-pdf/renderer'
 
 const ReviewReport = () => {
-    const { formFields } = useDataContext()
     const { riID, reportName, reportDate, buildPDFReport, pdfDoc, setRenderState } = useReportContext()
 
     const [status, setStatus] = useState<FETCHSTATUS>('loading') // status of report data fetching & rendering
@@ -35,115 +31,29 @@ const ReviewReport = () => {
         return null
     }, [reportName, reportDate])
     
-    const { data: cmrReportData, isLoading: isLoadingCMR, isError: isErrorCMR, error: errorCMR } = useCMRReportBuild(
+    const { data: cmrReport, isLoading: isLoadingCMR, isError: isErrorCMR, error: errorCMR } = useCMRReportBuild(
             {riID: riID, date: formatPickerAsDate(reportDate), afterDate: afterDate},
             {enabled: reportName === 'Call Monitoring Report' && !!riID && !!reportDate && !!afterDate}
         )
 
-    const { data: mcaReportData, isLoading: isLoadingMCA, isError: isErrorMCA, error: errorMCA } = useMCAReportBuild(
+    const { data: mcaReport, isLoading: isLoadingMCA, isError: isErrorMCA, error: errorMCA } = useMCAReportBuild(
             {riID: riID, date: formatPickerAsDate(reportDate), afterDate: afterDate},
             {enabled: reportName === 'MCA Report' && !!riID && !!reportDate && !!afterDate}
         )
         
-    const { data, isLoading, isError, error } = useMemo(() => {
-        if (reportName === 'Call Monitoring Report' && cmrReportData) {
-            return { data: cmrReportData, isLoading: isLoadingCMR, isError: isErrorCMR, error: errorCMR }
+    const { data: reportData, isLoading, isError, error } = useMemo(() => {
+        if (reportName === 'Call Monitoring Report' && cmrReport) {
+            return { data: cmrReport as CMRReportData, isLoading: isLoadingCMR, isError: isErrorCMR, error: errorCMR }
         }
 
-        if (reportName === 'MCA Report' && mcaReportData) {
-            return { data: mcaReportData, isLoading: isLoadingMCA, isError: isErrorMCA, error: errorMCA }
+        if (reportName === 'MCA Report' && mcaReport) {
+            return { data: mcaReport as MCAReportData, isLoading: isLoadingMCA, isError: isErrorMCA, error: errorMCA }
         }
 
         return { data: null, isLoading: false, isError: false, error: null }
-    }, [reportName, cmrReportData, isLoadingCMR, isErrorCMR, errorCMR, mcaReportData, isLoadingMCA, isErrorMCA, errorMCA])
-    console.log("data", data, isLoading, isError, error)
+    }, [reportName, cmrReport, isLoadingCMR, isErrorCMR, errorCMR, mcaReport, isLoadingMCA, isErrorMCA, errorMCA])
 
-    const reportData: CMRReportData | MCAReportData = useMemo(() => {
-        if (!data) return null
-
-        const fields = getFieldsbyType(formFields[1001], "scoring_dropdown").map(f => f.label)
-        
-        if (reportName === 'Call Monitoring Report') {
-            try {
-                let cmrReport: ReportCMR[] = []
-        
-                const forms = data.forms ?? [] // pull all calls details from RI on current date
-                if (!isEmpty(forms)) {
-                    const formsDoNotPrint = forms.filter(form => form.do_not_print)
-                    const cmrData = data.cmr ?? []
-                    const mcaData = data.mca ?? []
-                    
-                    if (!isEmpty(cmrData)) {
-                        cmrReport = cmrData.map(recordA => { // gather all call observed differences, call notes, MCA dates for the CMR Summary
-                            const recordMatch = forms.sort((a, b) => a.record_number - b.record_number).find(recordB => recordB.record_number === recordA.record_number)
-                            const finalScoreNum: number = +recordA.final_score
-
-                            const deviations = getDeviations(fields, recordMatch)
-        
-                            return recordMatch ? { ...recordA, final_score: finalScoreNum, obsv_diffs: deviations, call_notes: recordMatch.call_notes } : { ...recordA, final_score: NaN, obsv_diffs: [], call_notes: "" }
-                        })
-    
-                        // CMR Summary Data
-                        if (!isEmpty(cmrReport)) {
-                            const callswScores = cmrReport.filter(call => !Number.isNaN(call.final_score)) // only calculate list of calls with QA scores
-                            const avgFinalScore = (callswScores.reduce((sum, form) => sum + form.final_score, 0)/cmrReport.length).toFixed(2)
-                            const cmrSummaryData = {
-                                total_calls: cmrReport.length,
-                                total_accuracy: +avgFinalScore,
-                                mca_dates: !isEmpty(mcaData) ? getAllCMRSummaryDates(mcaData) : {} // get rolling 6 month MCA data
-                            }
-
-                            return { 
-                                report: cmrReport.filter(form => !formsDoNotPrint.some(call => call.record_number === form.record_number)), // filter out do not print calls from CMR call data
-                                summary: cmrSummaryData 
-                            }
-                        }
-                    }
-                }
-    
-                return null
-            } catch(err) {
-                console.error("Error loading CMR report data: ", err)
-                return null
-            }
-        }
-
-        if (reportName === 'MCA Report') {
-            try {
-                let mcaData: any = {}
-                const mcaCall: ReportMCA = data.mcaCall ? data.mcaCall[0] : null // pull first MCA call from RI and record date
-
-                if (mcaCall) {
-                    const form = data.form ?? [] // pull call details of current MCA
-
-                    if (!isEmpty(form)) {
-                        const deviations = getDeviations(fields, form)
-                        
-                        mcaData = { // add remaining call details (frame code, call type, call direction, and deviations list)
-                            ...mcaCall, 
-                            frame_code_id: form.frame_code_id, 
-                            call_type_id: form.call_type_id, 
-                            call_direction: form.call_direction,
-                            call_notes: form.call_notes, 
-                            obsv_diffs: deviations
-                        }
-                    }
-                    return { report: mcaData, mcaPriors: data.mca12 ?? [] }
-                }
-                
-                return null
-            } catch(err) {
-                console.error("Error loading MCA data: ", err)
-                return null
-            }
-        }
-
-        return null
-    }, [reportName, data])
-
-    console.log("report data", reportData)
-
-    //Load all report data using report parameters
+    //Set report status using report parameters
     useEffect(() => {
         if (!reportName || !riID || !reportDate) return
 
@@ -154,14 +64,16 @@ const ReviewReport = () => {
             setRenderState(false)
             setStatus('error')
             console.error("Failed to load report data: ", error)
-        } else if (!isLoading && !isError && !reportData) {
+        } else if (!isLoading && !isError && (reportData && isEmpty(reportData))) {
             setStatus('no-data')
         }
     }, [reportName, riID, reportDate, reportData, isLoading, isError])
 
     useEffect(() => { // Create a new PDF report using report data and store its PDF blob
         const createPDF = async () => {
-            if (status === 'loading' && reportData) {
+            if (!reportData) return
+            
+            if (status === 'loading' && !isEmpty(reportData)) {
                 try {
                     await buildPDFReport(reportName, reportData)
                 } catch (err) {
@@ -174,7 +86,7 @@ const ReviewReport = () => {
         }
 
         createPDF()
-    }, [status, reportName, reportData])
+    }, [status, reportData])
 
     useEffect(() => { // Render document after the PDF report is created
         if (!pdfDoc) return

@@ -13,6 +13,7 @@ export type FormFieldMap = Record<keyof Apps, FormField[]>
 export interface FieldCatg extends InputItemOption {
     label: string
     value: string | number
+    name?: string // Description/unabbreviated name
     siteNameID?: string // RI-specific property
     lob?: string // RI-specific property
 }
