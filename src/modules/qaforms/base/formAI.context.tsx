@@ -39,6 +39,7 @@ export interface FormAIContextProps extends Omit<FormContextProps, 'createNewFor
 	resetQuery: () => void
 	formChanges: FormChange[]
 	clearAllEdits: () => void
+	setQueryStatus: React.Dispatch<React.SetStateAction<FETCHSTATUS>>
 	queryStatus: FETCHSTATUS
 	filterItems: FiltersItems[]
 	setFilterItems: React.Dispatch<React.SetStateAction<FiltersItems[]>>
@@ -84,7 +85,10 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
 
 	// Compute a memoized state of the displayed form data on filter change
     const filteredData = useMemo(() => {
-		if (qaForms.forms.length === 0) return { activeFormID: undefined, forms: [], queryCache: [] }
+		if (qaForms.forms.length === 0) {
+			// setQueryStatus('no-data')
+			return { activeFormID: undefined, forms: [], queryCache: [] }
+		}
 
 		const activeFilterItems = filterItems.filter(filter => !!filter.label) // only search with non-null filter items
 		if (activeFilterItems.length === 0) return qaForms
@@ -122,6 +126,7 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
 			return { ...form, fields: filteredFields }
 		})
 
+		// setQueryStatus('success')
 		return { 
 			activeFormID: finalFilteredForms.findLast(form => form)?.formID, 
 			forms: finalFilteredForms, 
@@ -152,8 +157,6 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
 						recordDate: form.record_date,
 						recordTime: form.record_time,
 						...userData
-						// qrID: userData.qrID,
-						// siteName: userData.siteName
 					}
 
 					const updatedForm: Form = {
@@ -170,27 +173,44 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
 				})
 
 				setQaForms({ forms: newAIFormData, activeFormID: 1, queryCache: newAIFormData, formChanges: [] })
+				// setQueryStatus('success')
 			} else {
 				setQaForms({ forms: [], activeFormID: undefined, queryCache: [], formChanges: [] }) // no qaForms data
+				// setQueryStatus('no-data')
 			}
 		},
 		onError: (err) => { // Updates the qaForms data storage to empty
 			console.error("Form data fetch failed: ", err)
 			setQaForms({ forms: [], activeFormID: undefined, queryCache: [], formChanges: [] }) // no qaForms data
+			// setQueryStatus('error')
 		}
 	})
 
-	const queryStatus = useMemo((): FETCHSTATUS => {
+	const [queryStatus, setQueryStatus] = useState<FETCHSTATUS>('idle')
+	useEffect(() => {
 		if (queryParams) {
-			if (isLoading) return 'loading'
-			if (isError) return 'error'
-			if (isSuccess) return !isEmpty(qaForms.forms) ? 'success' : 'no-data'
+			if (isLoading) setQueryStatus('loading')
+			if (isError) setQueryStatus('error')
+			if (isSuccess) return !isEmpty(qaForms.forms) ? setQueryStatus('success') : setQueryStatus('no-data')
 		}
 
-		if (!isEmpty(filteredData.forms)) return 'success'
-		if (isEmpty(qaForms.queryCache)) return 'idle'
-		return 'no-data'
-	}, [queryParams, isLoading, isSuccess, isError, qaForms.forms, filteredData, qaForms.queryCache])
+		if (!isEmpty(filteredData.forms)) setQueryStatus('success')
+		else if (isEmpty(qaForms.queryCache)) setQueryStatus('idle')
+		else setQueryStatus('no-data')
+	}, [queryParams, isLoading, isSuccess, isError, filteredData.forms, qaForms.queryCache])
+	console.log("queryStatus", queryStatus)
+
+	// const queryStatus = useMemo((): FETCHSTATUS => {
+	// 	if (queryParams) {
+	// 		if (isLoading) return 'loading'
+	// 		if (isError) return 'error'
+	// 		if (isSuccess) return !isEmpty(qaForms.forms) ? 'success' : 'no-data'
+	// 	}
+
+	// 	if (!isEmpty(filteredData.forms)) return 'success'
+	// 	if (isEmpty(qaForms.queryCache)) return 'idle'
+	// 	return 'no-data'
+	// }, [queryParams, isLoading, isSuccess, isError, qaForms.forms, filteredData, qaForms.queryCache])
 
 	// immediately navigate to the active form if already loaded
 	useEffect(() => {
@@ -484,6 +504,7 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
 		setRecordDate(undefined)
 		setRecordDateRange([undefined, undefined])
 		setQueryParams(null)
+		// setQueryStatus('idle')
 		queryClient.resetQueries({ queryKey: ['report', 'aiForms'] }) // reset query cache
 	}
 
@@ -531,6 +552,7 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
 			setQueryParams,
 			resetQuery,
 			clearAllEdits,
+			setQueryStatus,
 			queryStatus,
 			filteredData,
 			formChanges: qaForms.formChanges,

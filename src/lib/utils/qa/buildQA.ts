@@ -49,7 +49,7 @@ export function loadForms(appID:number, user:{qrID:string, siteName:string}, fie
       formID: 1,
       metadata: metadata,
       fields: fields,
-      formRef: { form_id: 1, ...fieldsToRef(fields) }
+      formRef: { form_id: 1, ...fieldsToRef(fields) } as FormRef
     }
   
 	localStorage.removeItem(`formData-${appID}`)

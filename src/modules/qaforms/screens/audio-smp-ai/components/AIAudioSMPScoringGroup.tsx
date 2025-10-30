@@ -109,8 +109,7 @@ export const AIAudioSMPScoringGroup: FC<Omit<AudioSMPScoringProps, 'enableSkipLo
                     const result = formRef[f.label] !== null ? (Object.entries(formRef[f.label]).find(([key, value]) => key.endsWith("-result")) ? Object.entries(formRef[f.label]).find(([key, value]) => key.endsWith("-result"))[1] as number : NaN) : null
                     const deviation = DEVIATIONCATEGORY.find(catg => catg.value === result)?.label
                     const deviationColor = deviation === "Passed" ? Chip.Variant.success : (deviation === "Validation Needed" ? Chip.Variant.warning : Chip.Variant.danger)
-                    console.log(f.label, " result, deviation: ", result, deviation)
-                    
+
                     return (
                         <Flex column gap={aliasTokens.space200}>
                             <FormScoringSelect
@@ -118,9 +117,8 @@ export const AIAudioSMPScoringGroup: FC<Omit<AudioSMPScoringProps, 'enableSkipLo
                                 label={f.label}
                                 title={f.name}
                                 items={updatedScoring}
-                                error={(calltypeError || framecodeError) || Number.isNaN(result) ? true : false}
-                                helpText={Number.isNaN(result) ? "Error occured in data source." : undefined}
-                                selectedValue={!Number.isNaN(result) ? result : null}
+                                error={(calltypeError || framecodeError) ? true : false}
+                                selectedValue={result}
                                 disabled={
                                     skipLogic && 
                                     skipLogic.length > 0 && 
@@ -128,18 +126,14 @@ export const AIAudioSMPScoringGroup: FC<Omit<AudioSMPScoringProps, 'enableSkipLo
                                 }
                                 onChange={(value) => {
                                     const resultKey = `${f.label.replaceAll("_", "-")}-result`
-
-                                    if (value === null) {
-                                        updateField(f.label, null) // set to null
-                                        return
-                                    }
-
-                                    if (result === null) {
-                                        updateField(f.label, {[resultKey]: value}) // create new JSON scoring
-                                    } else {
-                                        // replace existing JSON scoring result value
-                                        const updatedJSON = { ...formRef[f.label], [resultKey]: value }
-                                        updateField(f.label, updatedJSON)
+                                    
+                                    if (result === null) { // create new scoring JSON
+                                        updateField(f.label, {[resultKey]: value}) 
+                                    } 
+                                    
+                                    else { // replace existing JSON scoring result value
+                                        if (value === null) updateField(f.label, { ...formRef[f.label], [resultKey]: null }) 
+                                        else updateField(f.label, { ...formRef[f.label], [resultKey]: value })
                                     }
                                 }}
                                 chip={result === null ? undefined : { label: deviation, variant: deviationColor }}

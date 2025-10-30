@@ -9,9 +9,6 @@ import { AudioSMPAttributeGroup, AudioSMPFormCheckboxGroup, AudioSMPMCACheckboxG
 import { FormTopHeader, CurrentFormMetaData, FormErrorCounter, FormCallCounter, FormPagination, FormBodyHeader, FormTextArea, FormActionsButtonGroup } from '../../../../qaforms/components'
 import { Divider, FlexWrapper400800 } from '../../../../../lib/shared.styles'
 import { TableData } from '@nielsen-media/maf-fc-table2'
-import { useFormData } from '../../../../../lib/maf-api/hooks/report.hooks'
-import Spinner from '@nielsen-media/maf-fc-spinner'
-import { ErrorPage } from '../../../../../lib/components/feedback/Error'
 
 export interface AudioSMPFormProps {
     mode: FormMode

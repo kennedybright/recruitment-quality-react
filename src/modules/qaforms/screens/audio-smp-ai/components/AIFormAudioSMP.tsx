@@ -40,7 +40,7 @@ const AIAudioSMPQAForm: FC<AudioSMPFormProps> = ({ mode, formID, readonlyData })
             {mode === 'ai' && <AIFormFiltersGroup />}
 
             {formState === 'idle' && <EmptyQAFormState title="Enter Filters to Load Forms" description="No monitoring forms have been displayed yet. In order to begin monitoring, simply run a query using parameters above." />}
-            {formState === 'no-data' && <EmptyQAFormState title="No Forms Loaded" description="No monitoring forms match the current criteria. Please try again." />}
+            {formState === 'no-data' && <EmptyQAFormState title="No Forms Found" description="No monitoring forms match the current criteria. Please try again." />}
             {formState === 'loading' && <Spinner className='ai-data-query-loading' loading />}
             {formState === 'error' && <EmptyQAFormState title="Error Occured" error description="An error occured when fetching the data. Please try again." />}
 

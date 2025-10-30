@@ -16,7 +16,7 @@ export interface FormActionsGroupProps {
 
 export const FormActionsButtonGroup: FC<FormActionsGroupProps> = ({ hookform }) => {
     const { notifier: { dialog } } = useMAFContext()
-    const { qaForms, deleteCurrentForm, createNewForm, toSubmit, isSubmitting, submitProgress, 
+    const { qaForms, formErrors, deleteCurrentForm, createNewForm, toSubmit, isSubmitting, submitProgress, 
         isSuccessful, submissionMessage, onSubmit, exit, cancelSubmission } = useFormContext()
 
     return (
@@ -59,6 +59,7 @@ export const FormActionsButtonGroup: FC<FormActionsGroupProps> = ({ hookform }) 
                 variant='primary'
                 view='solid'
                 className='form-button__submit'
+                disabled={formErrors.length > 0}
                 icon={{
                     icon: StyledSubmitIcon,
                     iconPosition: 'right'

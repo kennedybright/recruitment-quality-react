@@ -13,7 +13,7 @@ import { FormActionsGroupProps } from "./FormActionsButtonGroup"
 
 export const AIFormActionsButtonGroup: FC<FormActionsGroupProps> = ({ hookform }) => {
     const { notifier: { dialog } } = useMAFContext()
-    const { activeForm, toSubmit, isSubmitting, submitProgress, formChanges, clearAllEdits, totalSubmission,
+    const { activeForm, formErrors, toSubmit, isSubmitting, submitProgress, formChanges, clearAllEdits, totalSubmission,
         isSuccessful, submissionMessage, submitActionMessage, onSubmitAll, onSubmitCurrent, exit, cancelSubmission } = useAIFormContext()
 
     return (
@@ -46,7 +46,10 @@ export const AIFormActionsButtonGroup: FC<FormActionsGroupProps> = ({ hookform }
                     icon: CheckmarkIcon,
                     iconPosition: 'left'
                 }}
-                disabled={formChanges.filter(change => change.form_id === activeForm.formRef.ai_record_number)?.length === 0}
+                disabled={
+                    formErrors.filter(error => error.formID === activeForm.formRef.ai_record_number)?.length > 0 
+                    && formChanges.filter(change => change.form_id === activeForm.formRef.ai_record_number)?.length === 0
+                }
                 onClick={() => dialog.show('Are you sure you want to submit?', {
                     icon: WarningFillIcon,
                     variant: dialog.variant.warning,
@@ -72,7 +75,7 @@ export const AIFormActionsButtonGroup: FC<FormActionsGroupProps> = ({ hookform }
                     icon: StyledSubmitIcon,
                     iconPosition: 'right'
                 }}
-                disabled={formChanges.length === 0}
+                disabled={formErrors.length > 0 && formChanges.length === 0}
                 onClick={() => dialog.show('Are you sure you want to submit?', {
                     icon: WarningFillIcon,
                     variant: dialog.variant.warning,

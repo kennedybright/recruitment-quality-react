@@ -11,10 +11,10 @@ export function validateForms(appID:number, defaultFields:FormField[], forms:For
     const formsIncorrectCallIDs = validateIncorrectCallIDs(appID, forms)
 
     // form-specific errors based on application type (eg. Audio/SMP, TAM)
-    let formErrors = appID === 1001 ? validateAudioSMP(forms) : [] //validateTAMVideo(forms)
+    let appFormErrors = appID === 1001 ? validateAudioSMP(forms) : [] //validateTAMVideo(forms)
 
     // combine all errors
-    const allErrors = [...formsMissingReqs, ...formsIncorrectCallIDs, ...formErrors].sort(((a, b) => a.formID - b.formID))
+    const allErrors = [...formsMissingReqs, ...formsIncorrectCallIDs, ...appFormErrors].sort(((a, b) => a.formID - b.formID))
     return allErrors
 }
 
