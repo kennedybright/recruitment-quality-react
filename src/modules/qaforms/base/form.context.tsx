@@ -6,7 +6,7 @@ import { useMAFContext } from '../../../maf-api'
 import { WarningFillIcon } from '@nielsen-media/maf-fc-icons'
 import Flex from '@nielsen-media/maf-fc-flex'
 import { useDataContext } from '../../../lib/context/data.context'
-import { isEmpty, sleep } from '../../../lib/utils/helpers'
+import { sleep } from '../../../lib/utils/helpers'
 import { formatDateTime } from '../../../lib/utils/formatDateTime'
 import { validateForms } from '../../../lib/utils/qa/validateQA'
 import { buildFormsSubmission } from '../../../lib/utils/qa/submitQA'
@@ -163,7 +163,7 @@ export const QAFormProvider: FC<FormProviderProps> = ({ children, userData, appI
 			fields: defaultFields
 		}
 		
-		setQaForms({ forms: [...qaForms.forms, newForm], activeFormID: newFormID }) //setQaForms({ ...qaForms, forms: [...qaForms.forms, newForm], activeFormID: newFormID })
+		setQaForms({ forms: [...qaForms.forms, newForm], activeFormID: newFormID })
 		navigate({ appState: { activeFormID: newFormID } })
 	}
 

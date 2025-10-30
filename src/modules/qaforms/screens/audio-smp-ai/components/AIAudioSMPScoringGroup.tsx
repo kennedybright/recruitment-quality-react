@@ -1,13 +1,11 @@
 import { FC, useEffect, useState } from "react"
-import { FieldLogic, FormError, FormMode, FormRef } from "../../../../../lib/types/forms.types"
+import { FieldLogic } from "../../../../../lib/types/forms.types"
 import { aliasTokens, HookForm } from "@nielsen-media/maf-fc-foundation"
-import { FieldValues } from "react-hook-form"
 import { useAIFormContext } from "../../../base/formAI.context"
 import { useDataContext } from "../../../../../lib/context/data.context"
 import Grid from "@nielsen-media/maf-fc-grid"
 import { FormAttributeInput, FormScoringSelect } from '../../../components'
 import { getFieldsbyType } from "../../../../../lib/utils/qa/buildQA"
-import { TableData } from "@nielsen-media/maf-fc-table2"
 import Flex from "@nielsen-media/maf-fc-flex"
 import Banner from '@nielsen-media/maf-fc-banner'
 import { FlexScoringBannerGroup } from "../../../styles"
@@ -15,7 +13,6 @@ import { AudioSMPScoringProps } from "../../audio-smp/components/AudioSMPScoring
 import { DEVIATIONCATEGORY } from "../../../../../modules/qaforms/base/constants"
 import { AIScoringAnalysis } from "./AIScoringAnalysis"
 import Chip from '@nielsen-media/maf-fc-info-chip'
-import { isEmpty } from "src/lib/utils/helpers"
 
 export const AIAudioSMPScoringGroup: FC<Omit<AudioSMPScoringProps, 'enableSkipLogic'>> = ({
     mode,

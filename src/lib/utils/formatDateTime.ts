@@ -39,7 +39,6 @@ export function formatTimestamp(timestamp: Date, tz: string): string {
         hour12: false
     }).format(timestamp)
 
-    console.log("formatted timestamp: ", formattedTimestamp)
     return formattedTimestamp
 }
 
@@ -75,6 +74,5 @@ export function toZonedTimestamp(date: Date, timezone: string): string {
 
     const { year, month, day, hour, minute, second } = parts
     const utcDate = new Date(`${year}-${month}-${day} ${hour}:${minute}:${second}`)
-    console.log(`${date} To timezone [${timezone}]: ${utcDate.toISOString()}`)
     return utcDate.toISOString()
 }

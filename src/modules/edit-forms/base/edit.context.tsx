@@ -61,7 +61,6 @@ const EditFormsContext = createContext<EditContextProps>(null)
 // Main Edit Context Provider for each step (Choose Method, Edit Forms, Save Forms)
 
 export const EditProvider: FC = ({ children }) => {
-    const { actions: { navigate } } = useMAFContext()
     const { currentUser, dataLoaded, formFields } = useDataContext()
 
     // Global edit states

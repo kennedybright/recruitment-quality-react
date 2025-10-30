@@ -48,39 +48,6 @@ const AdjustCSS = ({
         // Observe the document body
         observer.observe(rootNode, {childList: true, subtree: true})
         return () => observer.disconnect() // Cleanup when component unmounts
-
-        // if (isBody) {
-        //     const observer = new MutationObserver(() => {
-        //         const selector = `${tag}[${attribute}="${searchValue}"]`
-        //         const elements = document.querySelectorAll<HTMLElement>(selector)
-    
-        //         if (elements.length === 0) return
-        //         elements.forEach((element) => { Object.assign(element.style, style) })
-        //     })
-
-        //     // Observe the document body
-        //     observer.observe(document.body, {childList: true, subtree: true})
-        //     return () => observer.disconnect() // Cleanup when component unmounts
-            
-        // } else {
-        //     if (!rootClass) return 
-        //     if (rootClass.includes('portal')) {
-        //         const portalRoot = document.getElementsByClassName(rootClass)[0] as HTMLElement | undefined
-        //         console.log("Portal root element: ", portalRoot)
-        //         if (!portalRoot) return
-
-        //         const observer = new MutationObserver(() => {
-        //             const selector = `${tag}[${attribute}="${searchValue}"]`
-        //             const element = portalRoot.querySelector(selector) as HTMLElement | null
-
-        //             if (element) { Object.assign(element.style, style) }
-        //         })
-
-        //         // Observe the portal container
-        //         observer.observe(portalRoot, {childList: true, subtree: true})
-        //         return () => observer.disconnect() // Cleanup when component unmounts
-        //     }
-        // }
     }, [tag, attribute, searchValue, style])
     
     return null

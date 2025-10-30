@@ -84,10 +84,7 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
 
 	// Compute a memoized state of the displayed form data on filter change
     const filteredData = useMemo(() => {
-		if (qaForms.forms.length === 0) {
-			// setQueryStatus('no-data')
-			return { activeFormID: undefined, forms: [], queryCache: [] }
-		}
+		if (qaForms.forms.length === 0) return { activeFormID: undefined, forms: [], queryCache: [] }
 
 		const activeFilterItems = filterItems.filter(filter => !!filter.label) // only search with non-null filter items
 		if (activeFilterItems.length === 0) return qaForms
@@ -125,7 +122,6 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
 			return { ...form, fields: filteredFields }
 		})
 
-		// setQueryStatus('success')
 		return { 
 			activeFormID: finalFilteredForms.findLast(form => form)?.formID, 
 			forms: finalFilteredForms, 
@@ -164,16 +160,13 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
 				})
 
 				setQaForms({ forms: newAIFormData, activeFormID: 1, queryCache: newAIFormData, formChanges: [] })
-				// setQueryStatus('success')
 			} else {
 				setQaForms({ forms: [], activeFormID: undefined, queryCache: [], formChanges: [] }) // no qaForms data
-				// setQueryStatus('no-data')
 			}
 		},
 		onError: (err) => { // Updates the qaForms data storage to empty
 			console.error("Form data fetch failed: ", err)
 			setQaForms({ forms: [], activeFormID: undefined, queryCache: [], formChanges: [] }) // no qaForms data
-			// setQueryStatus('error')
 		}
 	})
 
@@ -491,7 +484,6 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
 		setRecordDate(undefined)
 		setRecordDateRange([undefined, undefined])
 		setQueryParams(null)
-		// setQueryStatus('idle')
 		queryClient.resetQueries({ queryKey: ['report', 'aiForms'] }) // reset query cache
 	}
 

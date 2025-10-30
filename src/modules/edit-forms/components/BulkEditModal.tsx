@@ -30,8 +30,6 @@ export const BulkEditModal: FC<BulkEditModalProps> = ({ tableColumns, editFields
 
     const [bulkField, setBulkField] = useState<string>(undefined)
     const [bulkNewValue, setBulkNewValue] = useState<any>(undefined)
-
-    console.log("bulkEditClicked", selectBulkEdit)
     
     const onBulkDataChange = () => {
         setSelectBulkEdit(false)

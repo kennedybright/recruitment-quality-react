@@ -73,7 +73,6 @@ const EditForms = () => {
 
     if (status === 'no-data') { // No Data Available 
         return (
-            // <Flex className='edit-forms' column alignItems='center' justifyContent='center'>
             <FlexMessageStatus column className="data-load-status-message">
                 <DisplayIcon
                     icon={ErrorOutlineIcon}
@@ -87,7 +86,6 @@ const EditForms = () => {
                     }
                 </Text>
             </FlexMessageStatus>
-            // </Flex>
         )
     }
 

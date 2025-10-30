@@ -18,8 +18,8 @@ const FormChangesTable: FC<FormEditsTableProps> = ({changes, ...props}) => {
     const updatedChanges = changes.map((change) => {
         return {
             ...change,
-            old_value: formatTableValue(change.old_value), //typeof change.old_value === "boolean" ? `${change.old_value}` : change.old_value ?? "NULL",
-            new_value: formatTableValue(change.new_value) //typeof change.new_value === "boolean" ? `${change.new_value}` : change.new_value ?? "NULL"
+            old_value: formatTableValue(change.old_value),
+            new_value: formatTableValue(change.new_value)
         }
     })
 
