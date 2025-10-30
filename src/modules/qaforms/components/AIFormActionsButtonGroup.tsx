@@ -48,7 +48,7 @@ export const AIFormActionsButtonGroup: FC<FormActionsGroupProps> = ({ hookform }
                 }}
                 disabled={
                     formErrors.filter(error => error.formID === activeForm.formRef.ai_record_number)?.length > 0 
-                    && formChanges.filter(change => change.form_id === activeForm.formRef.ai_record_number)?.length === 0
+                    || formChanges.filter(change => change.form_id === activeForm.formRef.ai_record_number)?.length === 0
                 }
                 onClick={() => dialog.show('Are you sure you want to submit?', {
                     icon: WarningFillIcon,
@@ -75,7 +75,7 @@ export const AIFormActionsButtonGroup: FC<FormActionsGroupProps> = ({ hookform }
                     icon: StyledSubmitIcon,
                     iconPosition: 'right'
                 }}
-                disabled={formErrors.length > 0 && formChanges.length === 0}
+                disabled={formErrors.length > 0 || formChanges.length === 0}
                 onClick={() => dialog.show('Are you sure you want to submit?', {
                     icon: WarningFillIcon,
                     variant: dialog.variant.warning,

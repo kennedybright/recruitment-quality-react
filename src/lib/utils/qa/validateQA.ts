@@ -2,16 +2,16 @@
 
 import { FormRef, FormError, FormField } from "../../types/forms.types"
 
-export function validateForms(appID:number, defaultFields:FormField[], forms:FormRef[]): FormError[] {
+export function validateForms(appID:number, defaultFields:FormField[], forms:FormRef[], aiEnabled:boolean=false): FormError[] {
     // check required fields
     const reqFields = defaultFields.filter(field => field.isRequired).map(field => field.label)
-    const formsMissingReqs = validateMissingReqs(reqFields, forms)
+    const formsMissingReqs = validateMissingReqs(reqFields, forms, aiEnabled)
 
     // check for non-numeric Call IDs
-    const formsIncorrectCallIDs = validateIncorrectCallIDs(appID, forms)
+    const formsIncorrectCallIDs = validateIncorrectCallIDs(appID, forms, aiEnabled)
 
     // form-specific errors based on application type (eg. Audio/SMP, TAM)
-    let appFormErrors = appID === 1001 ? validateAudioSMP(forms) : [] //validateTAMVideo(forms)
+    let appFormErrors = appID === 1001 ? validateAudioSMP(forms, aiEnabled) : []
 
     // combine all errors
     const allErrors = [...formsMissingReqs, ...formsIncorrectCallIDs, ...appFormErrors].sort(((a, b) => a.formID - b.formID))
@@ -19,7 +19,7 @@ export function validateForms(appID:number, defaultFields:FormField[], forms:For
 }
 
 // Validate forms with missing required field values
-function validateMissingReqs(reqFields: string[], forms:FormRef[]): FormError[] {
+function validateMissingReqs(reqFields: string[], forms:FormRef[], aiEnabled?:boolean): FormError[] {
     let errors = []
     forms.forEach((form) => {
         const missingReqFields = Object.entries(form).map(([key, value]) => {
@@ -27,7 +27,7 @@ function validateMissingReqs(reqFields: string[], forms:FormRef[]): FormError[] 
         })?.filter(Boolean)
         if (missingReqFields.length > 0)
             errors.push({ 
-                formID: form.form_id ?? form.record_number,
+                formID: aiEnabled ? form.ai_record_number : form.record_number,
                 error: "Required field(s) not entered", 
                 errorContext: missingReqFields.join(", ")
             })
@@ -36,12 +36,12 @@ function validateMissingReqs(reqFields: string[], forms:FormRef[]): FormError[] 
 }
 
 // Validate forms with incorrect call ID
-export function validateIncorrectCallIDs(appID:number, forms:FormRef[]): FormError[] {
+export function validateIncorrectCallIDs(appID:number, forms:FormRef[], aiEnabled?:boolean): FormError[] {
     let errors = []
     forms.forEach((form) => {
         const callID = appID === 1001 ? form.sample_id : form.interview_id
         if (callID && !/^[0-9]+$/.test(String(callID))) errors.push({ 
-            formID: form.form_id ?? form.record_number,
+            formID: aiEnabled ? form.ai_record_number : form.record_number,
             error: "Call ID is not numeric only",
             errorContext: String(callID)
         })
@@ -50,12 +50,12 @@ export function validateIncorrectCallIDs(appID:number, forms:FormRef[]): FormErr
 }
 
 // Validate forms using Audio/SMP-specific data error logic
-export function validateAudioSMP(forms:FormRef[]): FormError[] {
+export function validateAudioSMP(forms:FormRef[], aiEnabled?:boolean): FormError[] {
     let errors = []
     // check incorrect Form type & Call type combinations
     forms.filter((form) => form.audio_smp === "SMP" && ["FL", "SP"].includes(form.call_type_id))?.forEach((form) => {
         errors.push({
-            formID: form.form_id ?? form.record_number, 
+            formID: aiEnabled ? form.ai_record_number : form.record_number, 
             error: "Invalid Calltype for SMP", 
             errorContext: form.call_type_id
         })
@@ -63,7 +63,7 @@ export function validateAudioSMP(forms:FormRef[]): FormError[] {
 
     forms.filter((form) => form.audio_smp === "SMP" && form.frame_code_id && form.frame_code_id !== "TV")?.forEach((form) => {
         errors.push({
-            formID: form.form_id ?? form.record_number, 
+            formID: aiEnabled ? form.ai_record_number : form.record_number, 
             error: "Invalid Framecode for SMP", 
             errorContext: form.frame_code_id
         })
@@ -71,7 +71,7 @@ export function validateAudioSMP(forms:FormRef[]): FormError[] {
 
     forms.filter((form) => form.audio_smp === "Audio" && form.frame_code_id && form.frame_code_id === "TV")?.forEach((form) => {
         errors.push({
-            formID: form.form_id ?? form.record_number,
+            formID: aiEnabled ? form.ai_record_number : form.record_number,
             error: "Invalid Framecode for Audio", 
             errorContext: form.frame_code_id
         })

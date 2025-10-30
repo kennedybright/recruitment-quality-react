@@ -127,13 +127,11 @@ export const AIAudioSMPScoringGroup: FC<Omit<AudioSMPScoringProps, 'enableSkipLo
                                 onChange={(value) => {
                                     const resultKey = `${f.label.replaceAll("_", "-")}-result`
                                     
-                                    if (result === null) { // create new scoring JSON
-                                        updateField(f.label, {[resultKey]: value}) 
-                                    } 
-                                    
-                                    else { // replace existing JSON scoring result value
+                                    if (formRef[f.label]) { // replace existing JSON scoring result value
                                         if (value === null) updateField(f.label, { ...formRef[f.label], [resultKey]: null }) 
                                         else updateField(f.label, { ...formRef[f.label], [resultKey]: value })
+                                    } else { // create new scoring JSON
+                                        updateField(f.label, {[resultKey]: value}) 
                                     }
                                 }}
                                 chip={result === null ? undefined : { label: deviation, variant: deviationColor }}

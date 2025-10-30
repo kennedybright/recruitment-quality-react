@@ -6,7 +6,6 @@ import { queryClient, useMAFContext } from '../../../maf-api'
 import Flex from '@nielsen-media/maf-fc-flex'
 import { useDataContext } from '../../../lib/context/data.context'
 import { FETCHSTATUS, formatTableValue, isEmpty, sleep } from '../../../lib/utils/helpers'
-import { formatDateTime } from '../../../lib/utils/formatDateTime'
 import { validateForms } from '../../../lib/utils/qa/validateQA'
 import { buildFormsSubmission, buildFormSubmission } from '../../../lib/utils/qa/submitQA'
 import { Loading } from '../../../lib/components/feedback/LoaderSpinner'
@@ -139,7 +138,7 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
     const formErrors: FormError[] = useMemo(() => {
 		if (qaForms.forms.length) {
 			const formRefList: FormRef[] = qaForms.forms.map(form => form.formRef)
-			return validateForms(appID, fields, formRefList)
+			return validateForms(appID, fields, formRefList, true)
 		}
 		return []
 	}, [qaForms.forms])
@@ -197,20 +196,8 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
 		if (!isEmpty(filteredData.forms)) setQueryStatus('success')
 		else if (isEmpty(qaForms.queryCache)) setQueryStatus('idle')
 		else setQueryStatus('no-data')
-	}, [queryParams, isLoading, isSuccess, isError, filteredData.forms, qaForms.queryCache])
+	}, [queryParams, isLoading, isSuccess, isError, qaForms.forms, filteredData.forms, qaForms.queryCache])
 	console.log("queryStatus", queryStatus)
-
-	// const queryStatus = useMemo((): FETCHSTATUS => {
-	// 	if (queryParams) {
-	// 		if (isLoading) return 'loading'
-	// 		if (isError) return 'error'
-	// 		if (isSuccess) return !isEmpty(qaForms.forms) ? 'success' : 'no-data'
-	// 	}
-
-	// 	if (!isEmpty(filteredData.forms)) return 'success'
-	// 	if (isEmpty(qaForms.queryCache)) return 'idle'
-	// 	return 'no-data'
-	// }, [queryParams, isLoading, isSuccess, isError, qaForms.forms, filteredData, qaForms.queryCache])
 
 	// immediately navigate to the active form if already loaded
 	useEffect(() => {
