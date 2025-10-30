@@ -16,6 +16,7 @@ export interface FieldCatg extends InputItemOption {
     name?: string // Description/unabbreviated name
     siteNameID?: string // RI-specific property
     lob?: string // RI-specific property
+    priority?: number // MCA-specific property
 }
 
 export type RI = {

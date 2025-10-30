@@ -148,11 +148,12 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
 		onSuccess: (data) => { // Updates the qaForms data storage
 			if (data && data.length > 0) {
 				const newAIFormData: Form[] = data.map((form, ndx) => {
-					// const { formattedDate, formattedTime } = formatDateTime(new Date())
 					const metadata: FormMetadata = {
-						recordDate: form.record_date, //formattedDate, 
-						recordTime: form.record_time, //formattedTime,
+						recordDate: form.record_date,
+						recordTime: form.record_time,
 						...userData
+						// qrID: userData.qrID,
+						// siteName: userData.siteName
 					}
 
 					const updatedForm: Form = {

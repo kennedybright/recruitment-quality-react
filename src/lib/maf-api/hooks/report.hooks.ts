@@ -154,7 +154,8 @@ export const useCMRReportBuild = (params: ReportAPIParams, options: UseQueryOpti
 
 // Custom hook for building the entire MCA report
 export const useMCAReportBuild = (params: ReportAPIParams, options: UseQueryOptions<any[]> = {}): ReportDataQuery => {
-    const { formFields } = useDataContext()
+    const { formFields, dropdowns } = useDataContext()
+    const mcaPriorityMap = Object.fromEntries(dropdowns.mca_category.map(({ label, priority }) => [label, priority]))
     const fields = getFieldsbyType(formFields[1001], "scoring_dropdown").map(f => f.label)
     
     const { data: mca, isLoading: isLoadingMCACall, isError: isErrorMCACall, error: errorMCACall } = useMCA({riID: params.riID, date: params.date}, options)   
@@ -174,7 +175,9 @@ export const useMCAReportBuild = (params: ReportAPIParams, options: UseQueryOpti
                 if (isEmpty(mca)) reportBuild.data = {}
                 else {
                     let mcaData = {}
-                    const mcaCall: ReportMCA = mca[0] // pull first MCA call from RI and record date
+                    const mcaCall: ReportMCA = mca.length === 1 
+                        ? mca[0]
+                        : mca.sort((a, b) => { return (mcaPriorityMap[a.mca_category] ?? Infinity) - (mcaPriorityMap[b.mca_category] ?? Infinity)})[0] // pull first MCA call at highest priority level
 
                     if (mcaCall && mcaForm) {
                         mcaData = { ...mcaCall }

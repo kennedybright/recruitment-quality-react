@@ -32,6 +32,8 @@ export const CurrentFormMetaData: FC<CurrentFormMetaDataProps> = ({ mode, aiEnab
                 const { activeForm } = useAIFormContext()
                 
                 return {
+                    // recordDate: activeForm.formRef.record_date,
+                    // recordTime: activeForm.formRef.record_time,
                     recordDate: activeForm.metadata.recordDate,
                     recordTime: activeForm.metadata.recordTime,
                     qrID: activeForm.metadata.qrID,

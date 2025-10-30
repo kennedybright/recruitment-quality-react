@@ -113,6 +113,7 @@ export const fetchMcaCategories = async(): Promise<FieldCatg[]> => {
     return data.map((category) => ({
         label: category.mca_category,
         value: category.mca_category,
+        priority: category.mca_priority_level
     })) || []
 }
 
