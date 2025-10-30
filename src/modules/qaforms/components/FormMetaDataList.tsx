@@ -21,6 +21,7 @@ export const CurrentFormMetaData: FC<CurrentFormMetaDataProps> = ({ mode, aiEnab
                 const { activeForm } = useFormContext()
                 
                 return {
+                    activeFormID: activeForm.formRef.record_number,
                     recordDate: activeForm.metadata.recordDate,
                     recordTime: activeForm.metadata.recordTime,
                     qrID: activeForm.metadata.qrID,
@@ -32,8 +33,7 @@ export const CurrentFormMetaData: FC<CurrentFormMetaDataProps> = ({ mode, aiEnab
                 const { activeForm } = useAIFormContext()
                 
                 return {
-                    // recordDate: activeForm.formRef.record_date,
-                    // recordTime: activeForm.formRef.record_time,
+                    activeFormID: activeForm.formRef.ai_record_number,
                     recordDate: activeForm.metadata.recordDate,
                     recordTime: activeForm.metadata.recordTime,
                     qrID: activeForm.metadata.qrID,
@@ -67,15 +67,15 @@ export const CurrentFormMetaData: FC<CurrentFormMetaDataProps> = ({ mode, aiEnab
             }
         }
     }
-    const metaDataRef: FormMetadata = ref()
+    const metaDataRef = ref()
     
     return (
         <List className="current form-details__metadata" size='regular' groupDirection='row' hasDivider>
+            {['new', 'ai'].includes(mode) && <List.Item className='ai-record-number' body={metaDataRef.activeFormID} heading={"Record Number"} />}
             <List.Item className='record-date' data-selector='record_date' body={metaDataRef.recordDate} heading={"Record Date"} />
             <List.Item className='record-time' data-selector='record_time' body={metaDataRef.recordTime} heading={"Record Time"} />
             <List.Item className='qr-id' data-selector='qr_id' body={metaDataRef.qrID} heading={"QR ID"} icon={UserCircleFillIcon} />
             <List.Item className='site-name' body={metaDataRef.siteName} heading={"Site Name"} icon={PhoneFillIcon} />
-            {/* {['new', 'ai'].includes(mode) && <List.Item className='site-name' body={metaDataRef.siteName} heading={"Site Name"} icon={PhoneFillIcon} />} */}
         </List>
     )
 }

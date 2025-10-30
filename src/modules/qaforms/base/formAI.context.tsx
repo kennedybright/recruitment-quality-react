@@ -134,15 +134,6 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
 		}
 	}, [qaForms.forms, filterItems]) as QAFormsAI
 
-	// Compute a memoized array of form errors
-    const formErrors: FormError[] = useMemo(() => {
-		if (qaForms.forms.length) {
-			const formRefList: FormRef[] = qaForms.forms.map(form => form.formRef)
-			return validateForms(appID, fields, formRefList, true)
-		}
-		return []
-	}, [qaForms.forms])
-
 	const { isLoading, isError, isSuccess } = useQuery<any[], AxiosError>({
 		queryKey: reportKeys.aiForms(appID, queryParams),
 		queryFn: () => fetchAIForms(appID, queryParams),
@@ -153,6 +144,7 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
 			if (data && data.length > 0) {
 				const newAIFormData: Form[] = data.map((form, ndx) => {
 					const metadata: FormMetadata = {
+						formID: ndx+1,
 						recordDate: form.record_date,
 						recordTime: form.record_time,
 						...userData
@@ -185,6 +177,18 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
 		}
 	})
 
+	// Compute a memoized array of form errors
+    const formErrors: FormError[] = useMemo(() => {
+		if (qaForms.forms.length) {
+			const formRefList: FormRef[] = qaForms.forms.map(form => form.formRef)
+			return validateForms(appID, fields, formRefList, true)
+		}
+		return []
+	}, [qaForms.forms])
+
+	// Updates the sessionStorage on form change
+	useEffect(() => { saveAIForms(appID, qaForms) }, [qaForms])
+
 	const [queryStatus, setQueryStatus] = useState<FETCHSTATUS>('idle')
 	useEffect(() => {
 		if (queryParams) {
@@ -197,7 +201,6 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
 		else if (isEmpty(qaForms.queryCache)) setQueryStatus('idle')
 		else setQueryStatus('no-data')
 	}, [queryParams, isLoading, isSuccess, isError, qaForms.forms, filteredData.forms, qaForms.queryCache])
-	console.log("queryStatus", queryStatus)
 
 	// immediately navigate to the active form if already loaded
 	useEffect(() => {
@@ -291,9 +294,6 @@ export const QAFormAIProvider: FC<FormProviderProps> = ({ children, userData, ap
 
         updateActiveForm({ ...activeForm, fields: updatedFields, formRef: updatedFormRef })
 	}
-
-	// Updates the sessionStorage on form change
-	useEffect(() => { saveAIForms(appID, qaForms) }, [qaForms])
 
 	// Global submit event
 	const [toSubmit, setToSubmit] = useState<boolean>(false)

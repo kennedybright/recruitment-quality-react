@@ -40,9 +40,10 @@ export function fieldsToRef(fields:FormField[]):Record<string, any> {
 export function loadForms(appID:number, user:{qrID:string, siteName:string}, fields:FormField[]) {
     const { formattedDate, formattedTime } = formatDateTime(new Date())
     const metadata: FormMetadata = {
-      recordDate: formattedDate, 
-      recordTime: formattedTime,
-      ...user
+		formID: 1,
+		recordDate: formattedDate, 
+		recordTime: formattedTime,
+		...user
     }
   
     const firstForm: Form = {

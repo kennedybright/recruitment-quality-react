@@ -154,6 +154,7 @@ export const QAFormProvider: FC<FormProviderProps> = ({ children, userData, appI
 		const newForm: Form = {
 			formID: newFormID,
 			metadata: {
+				formID: newFormID,
 				recordDate: formattedDate, 
 				recordTime: formattedTime,
 				...userData

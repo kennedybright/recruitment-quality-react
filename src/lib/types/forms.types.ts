@@ -47,6 +47,7 @@ export type FormField = {
 }
 
 export type FormMetadata = {
+    formID: number
     recordDate: string
     recordTime: string
     qrID: string

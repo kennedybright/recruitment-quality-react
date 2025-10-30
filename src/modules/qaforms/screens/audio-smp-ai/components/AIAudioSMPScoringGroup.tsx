@@ -15,6 +15,7 @@ import { AudioSMPScoringProps } from "../../audio-smp/components/AudioSMPScoring
 import { DEVIATIONCATEGORY } from "../../../../../modules/qaforms/base/constants"
 import { AIScoringAnalysis } from "./AIScoringAnalysis"
 import Chip from '@nielsen-media/maf-fc-info-chip'
+import { isEmpty } from "src/lib/utils/helpers"
 
 export const AIAudioSMPScoringGroup: FC<Omit<AudioSMPScoringProps, 'enableSkipLogic'>> = ({
     mode,
@@ -127,10 +128,19 @@ export const AIAudioSMPScoringGroup: FC<Omit<AudioSMPScoringProps, 'enableSkipLo
                                 onChange={(value) => {
                                     const resultKey = `${f.label.replaceAll("_", "-")}-result`
                                     
-                                    if (formRef[f.label]) { // replace existing JSON scoring result value
-                                        if (value === null) updateField(f.label, { ...formRef[f.label], [resultKey]: null }) 
-                                        else updateField(f.label, { ...formRef[f.label], [resultKey]: value })
+                                    console.log("question", formRef[f.label])
+                                    if (formRef[f.label] !== null) { // replace existing JSON scoring result value
+                                        console.log("existing JSON")
+                                        if (value === null) {
+                                            console.log("value null", value)
+                                            updateField(f.label, { ...formRef[f.label], [resultKey]: null }) 
+                                        }
+                                        else {
+                                            console.log("value not null", value)
+                                            updateField(f.label, { ...formRef[f.label], [resultKey]: value })
+                                        }
                                     } else { // create new scoring JSON
+                                        console.log("new JSON")
                                         updateField(f.label, {[resultKey]: value}) 
                                     }
                                 }}
