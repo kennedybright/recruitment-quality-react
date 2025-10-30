@@ -13,18 +13,33 @@ import { InformationOutlineIcon, SelectionsIcon } from '@nielsen-media/maf-fc-ic
 import AdjustCSS from '../../../../lib/utils/adjustCSS'
 import ActionIcon from '@nielsen-media/maf-fc-action-icon'
 import { useDataContext } from '../../../../lib/context/data.context'
-import { InlineSpinner } from '@nielsen-media/maf-fc-spinner'
 import { DownloadCsvButton } from '../../../../lib/components/buttons/DownloadButton'
 import { useMakeTable } from '../../../../lib/utils/custom-hooks/table.hooks'
 import { FETCHSTATUS, isEmpty } from '../../../../lib/utils/helpers'
 import { matchesDateRange, matchesFilters } from '../../../../lib/utils/reports/validateReport'
-import { useACM } from '../../../../lib/maf-api/hooks/report.hooks'
+import { useACM, useFormData } from '../../../../lib/maf-api/hooks/report.hooks'
 import { EmptyQAFormState } from '../../../../lib/components/feedback/EmptyQALoadState'
 import { formatPickerAsDate } from '../../../../lib/utils/formatDateTime'
 import AudioSMPQAForm from '../../../../modules/qaforms/screens/audio-smp/components/FormAudioSMP'
+import { ErrorPage } from '../../../../lib/components/feedback/Error'
+import { Loading } from '../../../../lib/components/feedback/LoaderSpinner'
+import { InlineSpinner } from '@nielsen-media/maf-fc-spinner'
 
 interface ACMTableProps<T> extends Partial<Table2Props<T>> {
     reportData: T[]
+}
+
+const ExpandedRow = ({ formID } : {formID: number}) => {
+    const { data: form, isLoading: isLoadingForm, isError: isErrorForm } = useFormData(1001, {recordNumber: formID}, {enabled: !!formID})
+        
+    if (isLoadingForm) return <Flex justifyContent='center'><Loading id='expanded-form-loading' /></Flex>
+    if (isErrorForm) return <ErrorPage 
+        className='error-loading-expanded-form' 
+        errorMessage={`Fetching form data for ${formID} failed.`} 
+        errorHeader='Error loading the form!' 
+    />
+
+    return <AudioSMPQAForm mode='readonly' formID={formID} readonlyData={form[0]} />
 }
 
 const ACMTable = <T,>({reportData, ...props}: ACMTableProps<T>) => {
@@ -173,8 +188,7 @@ const ACMTable = <T,>({reportData, ...props}: ACMTableProps<T>) => {
                     description: 'There are no records to display. Try adjusting your filters or check back later.'
                 }}
                 expanding={{
-                    getIsExpanded: ({ row }) => { console.log(row.original) },
-                    renderSubComponent: ({ row }) => <AudioSMPQAForm mode='readonly' formID={row.original.record_number} readonlyData={row.original} />
+                    renderSubComponent: ({ row }) => <ExpandedRow formID={row.original.record_number} />
                 }}
             >
                 <Table2.Header className='acm-table-header'>

@@ -59,7 +59,7 @@ const GenerateReportBody: FC = () => {
             resetReport()
             navigate({ appState: { step: steps[step-1] } })
         }
-        navigate({ appState: { step: steps[step-1], report: reportName } })
+        else navigate({ appState: { step: steps[step-1], report: reportName } })
     }
 
     const ReportHeader = () => (

@@ -116,7 +116,7 @@ export const useCMRReportBuild = (params: ReportAPIParams, options: UseQueryOpti
                     
                     if (cmr && !isEmpty(cmr)) {
                         cmrReport = cmr.sort((a, b) => a.record_number - b.record_number).map(cmrCall => { // gather all call observed differences, call notes, MCA dates for the CMR Summary
-                            const recordMatch = forms.sort((a, b) => a.record_number - b.record_number).find(call => call.record_number === call.record_number)
+                            const recordMatch = forms.sort((a, b) => a.record_number - b.record_number).find(call => call.record_number === cmrCall.record_number)
                             const deviations = getDeviations(fields, recordMatch)
 
                             return recordMatch 
@@ -175,6 +175,7 @@ export const useMCAReportBuild = (params: ReportAPIParams, options: UseQueryOpti
                 if (isEmpty(mca)) reportBuild.data = {}
                 else {
                     let mcaData = {}
+
                     const mcaCall: ReportMCA = mca.length === 1 
                         ? mca[0]
                         : mca.sort((a, b) => { return (mcaPriorityMap[a.mca_category] ?? Infinity) - (mcaPriorityMap[b.mca_category] ?? Infinity)})[0] // pull first MCA call at highest priority level
