@@ -101,7 +101,7 @@ stages:
   - mafInit
   - test
   - mafPreBuildTest
-  # - mafBumpVersion
+  - mafBumpVersion
   - mafBinaryPublish
   - mafDeploymentManifest
   - mafDeployFrontend
