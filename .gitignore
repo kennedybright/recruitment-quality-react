@@ -1,6 +1,7 @@
 # NPM, Yarn
 node_modules
 package-lock.json
+.npmrc
 
 .maf
 
