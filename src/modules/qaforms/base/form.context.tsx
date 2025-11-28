@@ -81,14 +81,14 @@ export const QAFormProvider: FC<FormProviderProps> = ({ children, userData, appI
 	const [defaultFields, setDefaultFields] = useState<FormField[]>(initialDefaultFields)
 	const methods = useForm<FieldValues>(fieldsToRef(initialDefaultFields))
 
+	// Updates the sessionStorage on form change
+	useEffect(() => { saveForms(appID, qaForms) }, [qaForms])
+
     // Compute a memoized array of form errors
     const formErrors: FormError[] = useMemo(() => {
 		const formRefList: FormRef[] = qaForms.forms.map(form => form.formRef)
 		return validateForms(appID, defaultFields, formRefList)
 	}, [qaForms.forms])
-
-	// Updates the sessionStorage on form change
-	useEffect(() => { saveForms(appID, qaForms) }, [qaForms])
 
 	// Setter method for Active Form & navigate to new active form
 	const setActiveForm = (formID: number) => {
@@ -112,9 +112,11 @@ export const QAFormProvider: FC<FormProviderProps> = ({ children, userData, appI
 
 	// Setter method for updating form field values
 	const updateField = (name:string, value:string | number | null | boolean) => {
+		console.log("updateField", name, value)
         // replace empty strings or undefined values with null
         const isEmptyUndefined = (typeof value === "string" && value === "") || value === undefined
         const updatedValue = isEmptyUndefined ? null : value
+		console.log("updatedValue", updatedValue)
         
 		const activeForm = getActiveForm()
 		const updatedFormRef = {
@@ -130,6 +132,7 @@ export const QAFormProvider: FC<FormProviderProps> = ({ children, userData, appI
             return field
         })
 
+		console.log("updatedActiveForm: formRef // fields: ", updatedFormRef, updatedFields)
         updateActiveForm({ ...activeForm, fields: updatedFields, formRef: updatedFormRef })
 	}
 

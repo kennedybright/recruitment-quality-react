@@ -132,6 +132,7 @@ export const AudioSMPAttributeGroup: FC<AudioSMPAttributeProps> = ({
                 items={dropdowns.ri_id.filter(ri => ri.lob === "Audio" || ri.lob === "Inbound")}
                 selectedValue={formRef.ri_id}
                 onChange={(value) => {
+                    console.log("ri_id", value)
                     onFieldChange("ri_id", value)
                     
                     // auto-populate RI's sitename
@@ -156,7 +157,7 @@ export const AudioSMPAttributeGroup: FC<AudioSMPAttributeProps> = ({
                 title='RI Site Name'
                 size='compact'
                 items={dropdowns.site_name_id}  
-                selectedValue={formRef.site_name_id}// ?? (dropdowns.ri_id.find(ri => ri.value === formRef.ri_id) ? dropdowns.ri_id.find(ri => ri.value === formRef.ri_id).siteNameID : null)}
+                selectedValue={formRef.site_name_id}
                 onChange={(value) => { onFieldChange("site_name_id", value) }}                                                               
             />
             <FormAttributeInput
