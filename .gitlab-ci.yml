@@ -1,4 +1,7 @@
-.ci_version: &ci_version v1.13.8
+default:
+  interruptible: true
+
+.ci_version: &ci_version v1.20.9
 include:
   - project: 'nielsen-media/maf/ci-cd/gitlab-ci-common'
     ref: *ci_version
@@ -26,10 +29,10 @@ include:
         - '/Jobs/v2/stages/deployFrontend/manual.yml'
     rules:
         - if: $ENV
-  - project: 'nielsen-media/me/planning/infra/gitlab-ci-tools'
-    ref: 4.10.1
-    file:
-      - '/gitlab-templates/ecr/template.yml'
+  # - project: 'nielsen-media/me/planning/infra/gitlab-ci-tools'
+  #   ref: 4.10.1
+  #   file:
+  #     - '/gitlab-templates/ecr/template.yml'
 
 variables:
   PACKAGE_MANAGER: "yarn"
@@ -48,8 +51,8 @@ variables:
       - assets
       - manifest
     description: The configuration to be deployed. assets or manifest?
-  VERSION:
-    value: '2.0.1'
+  NEW_SERVICE_VERSION:
+    value: ''
     description: Version of your frontend app
 
   ##================== *** initPipeline *** ================##
@@ -82,7 +85,6 @@ variables:
   SERVICE_NAME: 'maf-starter-fe'
   SCRIPTS_DIR: .
   PACKAGE_DIR: "."
-  CI_NODE_VERSION: 22.12.0
 
 workflow:
   rules:
@@ -97,11 +99,12 @@ workflow:
         MAF_API_TOKEN: $MAF_API_TOKEN_PROD
 
 stages:
-  - build
-  - mafInit
+  # - build
+  # - mafInit
   - test
   - mafPreBuildTest
   - mafBumpVersion
+  - mafNpmPublish
   - mafBinaryPublish
   - mafDeploymentManifest
   - mafDeployFrontend
