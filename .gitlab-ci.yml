@@ -6,27 +6,27 @@ include:
   - project: 'nielsen-media/maf/ci-cd/gitlab-ci-common'
     ref: *ci_version
     file:
-      - '/Jobs/v2/stages/sast.yml'
-      - '/Jobs/v2/stages/helperScripts.yml'
-      - '/Jobs/v2/stages/base.yml'
-      - '/Jobs/v2/stages/initPipeline.yml'
-      - '/Jobs/v2/stages/bumpVersionmaf.yml'
-      - '/Jobs/v2/stages/deployManifest.yml'
-      - '/Jobs/v2/stages/binaryPublish.yml'
-      - '/Jobs/v2/stages/deployFrontend/base.yml'
-      - '/Jobs/v2/stages/deployFrontend/defaultBranch.yml'
-      - '/Jobs/v2/stages/preBuildTests.yml'
+      - '/Jobs/v3/stages/sast.yml'
+      - '/Jobs/v3/stages/helperScripts.yml'
+      - '/Jobs/v3/stages/base.yml'
+      - '/Jobs/v3/stages/initPipeline.yml'
+      - '/Jobs/v3/stages/bumpVersionmaf.yml'
+      - '/Jobs/v3/stages/deployManifest.yml'
+      - '/Jobs/v3/stages/binaryPublish.yml'
+      - '/Jobs/v3/stages/deployFrontend/base.yml'
+      - '/Jobs/v3/stages/deployFrontend/defaultBranch.yml'
+      - '/Jobs/v3/stages/preBuildTests.yml'
     rules:
       - if: $ENV == null
   - project: 'nielsen-media/maf/ci-cd/gitlab-ci-common'
     ref: *ci_version
     file:
-        - '/Jobs/v2/stages/helperScripts.yml'
-        - '/Jobs/v2/stages/base.yml'
-        - '/Jobs/v2/stages/initPipeline.yml'
-        - '/Jobs/v2/stages/deployManifest.yml'
-        - '/Jobs/v2/stages/deployFrontend/base.yml'
-        - '/Jobs/v2/stages/deployFrontend/manual.yml'
+        - '/Jobs/v3/stages/helperScripts.yml'
+        - '/Jobs/v3/stages/base.yml'
+        - '/Jobs/v3/stages/initPipeline.yml'
+        - '/Jobs/v3/stages/deployManifest.yml'
+        - '/Jobs/v3/stages/deployFrontend/base.yml'
+        - '/Jobs/v3/stages/deployFrontend/manual.yml'
     rules:
         - if: $ENV
   # - project: 'nielsen-media/me/planning/infra/gitlab-ci-tools'
