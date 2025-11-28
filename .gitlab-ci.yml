@@ -10,7 +10,7 @@ include:
       - '/Jobs/v3/stages/helperScripts.yml'
       - '/Jobs/v3/stages/base.yml'
       - '/Jobs/v3/stages/initPipeline.yml'
-      - '/Jobs/v3/stages/bumpVersionmaf.yml'
+      - '/Jobs/v3/stages/bumpVersion.yml'
       - '/Jobs/v3/stages/deployManifest.yml'
       - '/Jobs/v3/stages/binaryPublish.yml'
       - '/Jobs/v3/stages/deployFrontend/base.yml'
