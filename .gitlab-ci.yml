@@ -11,11 +11,13 @@ include:
       - '/Jobs/v3/stages/base.yml'
       - '/Jobs/v3/stages/initPipeline.yml'
       - '/Jobs/v3/stages/bumpVersion.yml'
-      - '/Jobs/v3/stages/deployManifest.yml'
+      - '/Jobs/v3/stages/npmPublish.yml'
       - '/Jobs/v3/stages/binaryPublish.yml'
       - '/Jobs/v3/stages/deployFrontend/base.yml'
       - '/Jobs/v3/stages/deployFrontend/defaultBranch.yml'
       - '/Jobs/v3/stages/preBuildTests.yml'
+      - '/Jobs/v3/stages/testProject.yml'
+      - '/Jobs/v3/stages/componentTesting.yml'
     rules:
       - if: $ENV == null
   - project: 'nielsen-media/maf/ci-cd/gitlab-ci-common'
